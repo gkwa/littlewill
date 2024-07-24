@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"bufio"
+	"os"
+
 	"github.com/gkwa/littlewill/core"
 	"github.com/spf13/cobra"
 )
@@ -15,13 +18,19 @@ var pathsFromStdinCmd = &cobra.Command{
 		logger := LoggerFrom(ctx)
 		logger.V(1).Info("Processing paths from stdin")
 
-		for _, path := range args {
-			logger.V(1).Info("path", path)
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			path := scanner.Text()
+			logger.V(1).Info("Processing path", "path", path)
 
 			err := core.ProcessFile(ctx, path)
 			if err != nil {
 				logger.Error(err, "Failed to process file", "path", path)
 			}
+		}
+
+		if err := scanner.Err(); err != nil {
+			logger.Error(err, "Error reading input")
 		}
 	},
 }
