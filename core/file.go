@@ -5,23 +5,64 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
+	"runtime"
+	"syscall"
 
 	"github.com/go-logr/logr"
 )
+
+var (
+	lockFile   func(*os.File) error
+	unlockFile func(*os.File) error
+)
+
+func init() {
+	if runtime.GOOS == "windows" {
+		lockFile = func(f *os.File) error {
+			return nil
+		}
+		unlockFile = func(f *os.File) error {
+			return nil
+		}
+	} else {
+		lockFile = func(f *os.File) error {
+			err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX)
+			if err != nil {
+				return fmt.Errorf("failed to lock file: %w", err)
+			}
+			return nil
+		}
+		unlockFile = func(f *os.File) error {
+			err := syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
+			if err != nil {
+				return fmt.Errorf("failed to unlock file: %w", err)
+			}
+			return nil
+		}
+	}
+}
 
 func ProcessFile(ctx context.Context, path string) error {
 	logger := logr.FromContextOrDiscard(ctx)
 	logger = logger.WithValues("file", path)
 	logger.Info("Processing file")
 
-	// Open the original file for reading
-	originalFile, err := os.Open(path)
+	originalFile, err := os.OpenFile(path, os.O_RDWR, 0o644)
 	if err != nil {
 		return fmt.Errorf("failed to open original file: %w", err)
 	}
-	defer originalFile.Close()
+	defer func() {
+		if err := unlockFile(originalFile); err != nil {
+			logger.Error(err, "Failed to unlock file")
+		}
+		originalFile.Close()
+	}()
 
-	// Create a temporary file in the same directory
+	err = lockFile(originalFile)
+	if err != nil {
+		return err
+	}
+
 	dir := filepath.Dir(path)
 	tempFile, err := os.CreateTemp(dir, "littlewill-temp-*")
 	if err != nil {
@@ -30,27 +71,25 @@ func ProcessFile(ctx context.Context, path string) error {
 	tempPath := tempFile.Name()
 	defer func() {
 		tempFile.Close()
-		// In case of any error, try to remove the temporary file
 		os.Remove(tempPath)
 	}()
 
-	// Process the content
+	_, err = originalFile.Seek(0, 0)
+	if err != nil {
+		return fmt.Errorf("failed to seek to the beginning of original file: %w", err)
+	}
 	err = CleanupMarkdownLinks(originalFile, tempFile)
 	if err != nil {
 		return fmt.Errorf("failed to process file: %w", err)
 	}
 
-	// Ensure all data is written to the temporary file
 	err = tempFile.Sync()
 	if err != nil {
 		return fmt.Errorf("failed to sync temporary file: %w", err)
 	}
 
-	// Close both files before renaming
-	originalFile.Close()
 	tempFile.Close()
 
-	// Rename the temporary file to the original file
 	err = os.Rename(tempPath, path)
 	if err != nil {
 		return fmt.Errorf("failed to rename temporary file: %w", err)
