@@ -13,9 +13,11 @@ var pathsFromStdinCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		ctx := cmd.Context()
 		logger := LoggerFrom(ctx)
-		logger.Info("Processing paths from stdin")
+		logger.V(1).Info("Processing paths from stdin")
 
 		for _, path := range args {
+			logger.V(1).Info("path", path)
+
 			err := core.ProcessFile(ctx, path)
 			if err != nil {
 				logger.Error(err, "Failed to process file", "path", path)
