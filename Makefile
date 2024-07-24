@@ -67,6 +67,10 @@ fmt: .timestamps/.fmt.time
 	@mkdir -p .timestamps
 	@touch $@
 
+.PHONY: test # run all tests
+test:
+	go test -count=1 ./core
+
 .PHONY: lint # lint
 lint: .timestamps/.lint.time
 
