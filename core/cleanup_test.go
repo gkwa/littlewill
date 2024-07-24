@@ -35,7 +35,6 @@ Here is a link https://google.com.
 This is some text
 [
 
-
 Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
 This more text.
 Here is a link https://google.com.
@@ -58,7 +57,6 @@ Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citysto
 This more text.
 [
 
-
   Another link with space](https://example.com)
 Here is a link https://google.com.
 `,
@@ -69,6 +67,25 @@ This is some text
 This more text.
 [Another link with space](https://example.com)
 Here is a link https://google.com.
+`,
+		},
+		{
+			name: "Whitespace at beginning of line",
+			input: `
+			[
+
+			Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
+			
+			https://substack.com/@javinpaul/note/c-62756371?r=21036
+			
+			https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
+`,
+			expected: `
+			[Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
+			
+			https://substack.com/@javinpaul/note/c-62756371?r=21036
+			
+			https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
 `,
 		},
 	}
