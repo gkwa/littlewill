@@ -1,6 +1,3 @@
-//go:build !windows
-// +build !windows
-
 package core
 
 import (
@@ -10,25 +7,41 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"runtime"
 	"syscall"
 
 	"github.com/go-logr/logr"
 )
 
-func lockFile(f *os.File) error {
-	err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX)
-	if err != nil {
-		return fmt.Errorf("failed to lock file: %w", err)
-	}
-	return nil
-}
+var (
+	lockFile   func(*os.File) error
+	unlockFile func(*os.File) error
+)
 
-func unlockFile(f *os.File) error {
-	err := syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
-	if err != nil {
-		return fmt.Errorf("failed to unlock file: %w", err)
+func init() {
+	if runtime.GOOS == "windows" {
+		lockFile = func(f *os.File) error {
+			return nil
+		}
+		unlockFile = func(f *os.File) error {
+			return nil
+		}
+	} else {
+		lockFile = func(f *os.File) error {
+			err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX)
+			if err != nil {
+				return fmt.Errorf("failed to lock file: %w", err)
+			}
+			return nil
+		}
+		unlockFile = func(f *os.File) error {
+			err := syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
+			if err != nil {
+				return fmt.Errorf("failed to unlock file: %w", err)
+			}
+			return nil
+		}
 	}
-	return nil
 }
 
 func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.Writer) error) error {
@@ -75,7 +88,7 @@ func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.
 
 	err = originalFile.Sync()
 	if err != nil {
-		return fmt.Errorf("failed to sync file: %w", err)
+		return fmt.Errorf("failed to s.V(1)ync file: %w", err)
 	}
 
 	logger.V(1).Info("Successfully processed and updated file")
