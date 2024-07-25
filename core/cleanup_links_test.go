@@ -93,7 +93,7 @@ Here is a link https://google.com.
 		t.Run(tc.name, func(t *testing.T) {
 			input := strings.NewReader(tc.input)
 			var output bytes.Buffer
-			err := CleanupMarkdownLinks(input, &output)
+			err := RemoveWhitespaceFromMarkdownLinks(input, &output)
 			if err != nil {
 				t.Fatalf("Unexpected error: %v", err)
 			}
@@ -109,7 +109,7 @@ func TestCleanupMarkdownLinksErrors(t *testing.T) {
 	t.Run("Read error", func(t *testing.T) {
 		errReader := &errorReader{err: errors.New("read error")}
 		var output bytes.Buffer
-		err := CleanupMarkdownLinks(errReader, &output)
+		err := RemoveWhitespaceFromMarkdownLinks(errReader, &output)
 		if err == nil {
 			t.Fatal("Expected an error, got nil")
 		}
@@ -121,7 +121,7 @@ func TestCleanupMarkdownLinksErrors(t *testing.T) {
 	t.Run("Write error", func(t *testing.T) {
 		input := strings.NewReader("some input")
 		errWriter := &errorWriter{err: errors.New("write error")}
-		err := CleanupMarkdownLinks(input, errWriter)
+		err := RemoveWhitespaceFromMarkdownLinks(input, errWriter)
 		if err == nil {
 			t.Fatal("Expected an error, got nil")
 		}

@@ -8,7 +8,7 @@ import (
 
 var markdownLinkRegex = regexp.MustCompile(`\[\s*(\S.*?)\s*\]\(`)
 
-func CleanupMarkdownLinks(r io.Reader, w io.Writer) error {
+func RemoveWhitespaceFromMarkdownLinks(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
 		return fmt.Errorf("CleanupMarkdownLinks: failed to read input: %w", err)
