@@ -7,42 +7,9 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"runtime"
-	"syscall"
 
 	"github.com/go-logr/logr"
 )
-
-var (
-	lockFile   func(*os.File) error
-	unlockFile func(*os.File) error
-)
-
-func init() {
-	if runtime.GOOS == "windows" {
-		lockFile = func(f *os.File) error {
-			return nil
-		}
-		unlockFile = func(f *os.File) error {
-			return nil
-		}
-	} else {
-		lockFile = func(f *os.File) error {
-			err := syscall.Flock(int(f.Fd()), syscall.LOCK_EX)
-			if err != nil {
-				return fmt.Errorf("failed to lock file: %w", err)
-			}
-			return nil
-		}
-		unlockFile = func(f *os.File) error {
-			err := syscall.Flock(int(f.Fd()), syscall.LOCK_UN)
-			if err != nil {
-				return fmt.Errorf("failed to unlock file: %w", err)
-			}
-			return nil
-		}
-	}
-}
 
 func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.Writer) error) error {
 	logger := logr.FromContextOrDiscard(ctx)
@@ -65,30 +32,9 @@ func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.
 		return nil
 	}
 
-	originalFile, err := os.OpenFile(path, os.O_RDWR|os.O_TRUNC, 0o644)
-	if err != nil {
-		return fmt.Errorf("failed to open original file: %w", err)
-	}
-	defer func() {
-		if err := unlockFile(originalFile); err != nil {
-			logger.Error(err, "Failed to unlock file")
-		}
-		originalFile.Close()
-	}()
-
-	err = lockFile(originalFile)
-	if err != nil {
-		return err
-	}
-
-	_, err = originalFile.Write(processedContent.Bytes())
+	err = os.WriteFile(path, processedContent.Bytes(), 0o644)
 	if err != nil {
 		return fmt.Errorf("failed to write processed content to file: %w", err)
-	}
-
-	err = originalFile.Sync()
-	if err != nil {
-		return fmt.Errorf("failed to s.V(1)ync file: %w", err)
 	}
 
 	logger.V(1).Info("Successfully processed and updated file")
