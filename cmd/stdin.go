@@ -15,6 +15,7 @@ var pathsFromStdinCmd = &cobra.Command{
 			cmd.Context(),
 			core.RemoveWhitespaceFromMarkdownLinks,
 			core.RemoveTitlesFromMarkdownLinks,
+			core.RemoveParamsFromYouTubeLinks,
 		)
 	},
 }

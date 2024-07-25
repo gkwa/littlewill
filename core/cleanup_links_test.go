@@ -57,7 +57,7 @@ Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citysto
 This more text.
 [
 
-  Another link with space](https://example.com)
+ Another link with space](https://example.com)
 Here is a link https://google.com.
 `,
 			expected: `
@@ -72,20 +72,20 @@ Here is a link https://google.com.
 		{
 			name: "Whitespace at beginning of line",
 			input: `
-			[
+   		[
 
-			Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
-			
-			https://substack.com/@javinpaul/note/c-62756371?r=21036
-			
-			https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
+   		Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
+   		
+   		https://substack.com/@javinpaul/note/c-62756371?r=21036
+   		
+   		https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
 `,
 			expected: `
-			[Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
-			
-			https://substack.com/@javinpaul/note/c-62756371?r=21036
-			
-			https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
+   		[Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
+   		
+   		https://substack.com/@javinpaul/note/c-62756371?r=21036
+   		
+   		https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
 `,
 		},
 	}
@@ -225,6 +225,82 @@ func TestRemoveTitlesFromMarkdownLinksErrors(t *testing.T) {
 			t.Fatal("Expected an error, got nil")
 		}
 		if !strings.Contains(err.Error(), "RemoveTitlesFromMarkdownLinks: failed to write output: write error") {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+}
+
+func TestRemoveParamsFromYouTubeLinks(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "YouTube link with si parameter",
+			input:    "https://youtu.be/JSKJbGi5oNA?si=b2GkFDivckm1k-Mq",
+			expected: "https://youtu.be/JSKJbGi5oNA",
+		},
+		{
+			name:     "YouTube link without si parameter",
+			input:    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+			expected: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+		},
+		{
+			name:     "Non-YouTube link",
+			input:    "https://example.com?param=value",
+			expected: "https://example.com?param=value",
+		},
+		{
+			name: "Multiple YouTube links",
+			input: `
+Check out this video: https://youtu.be/JSKJbGi5oNA?si=b2GkFDivckm1k-Mq
+And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=AnotherParam
+`,
+			expected: `
+Check out this video: https://youtu.be/JSKJbGi5oNA
+And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.NewReader(tc.input)
+			var output bytes.Buffer
+			err := RemoveParamsFromYouTubeLinks(input, &output)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+			result := output.String()
+			if diff := cmp.Diff(tc.expected, result); diff != "" {
+				t.Errorf("Unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestRemoveParamsFromYouTubeLinksErrors(t *testing.T) {
+	t.Run("Read error", func(t *testing.T) {
+		errReader := &errorReader{err: errors.New("read error")}
+		var output bytes.Buffer
+		err := RemoveParamsFromYouTubeLinks(errReader, &output)
+		if err == nil {
+			t.Fatal("Expected an error, got nil")
+		}
+		if !strings.Contains(err.Error(), "RemoveParamsFromYouTubeLinks: failed to read input: read error") {
+			t.Errorf("Unexpected error message: %v", err)
+		}
+	})
+
+	t.Run("Write error", func(t *testing.T) {
+		input := strings.NewReader("some input")
+		errWriter := &errorWriter{err: errors.New("write error")}
+		err := RemoveParamsFromYouTubeLinks(input, errWriter)
+		if err == nil {
+			t.Fatal("Expected an error, got nil")
+		}
+		if !strings.Contains(err.Error(), "RemoveParamsFromYouTubeLinks: failed to write output: write error") {
 			t.Errorf("Unexpected error message: %v", err)
 		}
 	})
