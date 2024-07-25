@@ -6,7 +6,10 @@ import (
 	"regexp"
 )
 
-var markdownLinkRegex = regexp.MustCompile(`\[\s*(\S.*?)\s*\]\(`)
+var (
+	markdownLinkRegex          = regexp.MustCompile(`\[\s*(\S.*?)\s*\]\(`)
+	markdownLinkWithTitleRegex = regexp.MustCompile(`\[([^\]]+)\]\(([^)]+)\s+"[^"]+"\)`)
+)
 
 func RemoveWhitespaceFromMarkdownLinks(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
@@ -21,6 +24,24 @@ func RemoveWhitespaceFromMarkdownLinks(r io.Reader, w io.Writer) error {
 	_, err = w.Write(cleaned)
 	if err != nil {
 		return fmt.Errorf("CleanupMarkdownLinks: failed to write output: %w", err)
+	}
+
+	return nil
+}
+
+func RemoveTitlesFromMarkdownLinks(r io.Reader, w io.Writer) error {
+	buf, err := io.ReadAll(r)
+	if err != nil {
+		return fmt.Errorf("RemoveTitlesFromMarkdownLinks: failed to read input: %w", err)
+	}
+
+	cleaned := markdownLinkWithTitleRegex.ReplaceAllFunc(buf, func(match []byte) []byte {
+		return markdownLinkWithTitleRegex.ReplaceAll(match, []byte("[$1]($2)"))
+	})
+
+	_, err = w.Write(cleaned)
+	if err != nil {
+		return fmt.Errorf("RemoveTitlesFromMarkdownLinks: failed to write output: %w", err)
 	}
 
 	return nil
