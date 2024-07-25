@@ -47,9 +47,25 @@ func init() {
 func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.Writer) error) error {
 	logger := logr.FromContextOrDiscard(ctx)
 	logger = logger.WithValues("file", path)
-	logger.Info("Processing file")
+	logger.V(1).Info("Processing file")
 
-	originalFile, err := os.OpenFile(path, os.O_RDWR, 0o644)
+	originalContent, err := os.ReadFile(path)
+	if err != nil {
+		return fmt.Errorf("failed to read original file: %w", err)
+	}
+
+	var processedContent bytes.Buffer
+	err = transform(bytes.NewReader(originalContent), &processedContent)
+	if err != nil {
+		return fmt.Errorf("failed to process file: %w", err)
+	}
+
+	if bytes.Equal(originalContent, processedContent.Bytes()) {
+		logger.V(1).Info("File content unchanged, skipping write")
+		return nil
+	}
+
+	originalFile, err := os.OpenFile(path, os.O_RDWR|os.O_TRUNC, 0o644)
 	if err != nil {
 		return fmt.Errorf("failed to open original file: %w", err)
 	}
@@ -65,43 +81,17 @@ func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.
 		return err
 	}
 
-	originalContent, err := io.ReadAll(originalFile)
-	if err != nil {
-		return fmt.Errorf("failed to read original file: %w", err)
-	}
-
-	var processedContent bytes.Buffer
-	err = transform(bytes.NewReader(originalContent), &processedContent)
-	if err != nil {
-		return fmt.Errorf("failed to process file: %w", err)
-	}
-
-	if bytes.Equal(originalContent, processedContent.Bytes()) {
-		logger.Info("File content unchanged, skipping write")
-		return nil
-	}
-
-	_, err = originalFile.Seek(0, 0)
-	if err != nil {
-		return fmt.Errorf("failed to seek to the beginning of original file: %w", err)
-	}
-
-	err = originalFile.Truncate(0)
-	if err != nil {
-		return fmt.Errorf("failed to truncate original file: %w", err)
-	}
-
-	_, err = io.Copy(originalFile, &processedContent)
+	_, err = originalFile.Write(processedContent.Bytes())
 	if err != nil {
 		return fmt.Errorf("failed to write processed content to file: %w", err)
 	}
 
 	err = originalFile.Sync()
 	if err != nil {
-		return fmt.Errorf("failed to sync file: %w", err)
+		return fmt.Errorf("failed to s.V(1)ync file: %w", err)
 	}
 
-	logger.Info("Successfully processed and updated file")
+	logger.V(1).Info("Successfully processed and updated file")
 	return nil
 }
 
