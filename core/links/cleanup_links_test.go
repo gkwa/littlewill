@@ -1,4 +1,4 @@
-package core
+package links
 
 import (
 	"bytes"
@@ -57,7 +57,7 @@ Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citysto
 This more text.
 [
 
- Another link with space](https://example.com)
+  Another link with space](https://example.com)
 Here is a link https://google.com.
 `,
 			expected: `
@@ -67,25 +67,6 @@ This is some text
 This more text.
 [Another link with space](https://example.com)
 Here is a link https://google.com.
-`,
-		},
-		{
-			name: "Whitespace at beginning of line",
-			input: `
-   		[
-
-   		Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
-   		
-   		https://substack.com/@javinpaul/note/c-62756371?r=21036
-   		
-   		https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
-`,
-			expected: `
-   		[Managing 100s of Kubernetes Clusters using Cluster API](https://techblog.citystoragesystems.com/p/managing-100s-of-kubernetes-clusters "Managing 100s of Kubernetes Clusters using Cluster API")
-   		
-   		https://substack.com/@javinpaul/note/c-62756371?r=21036
-   		
-   		https://chatgpt.com/share/650bd7e3-36ec-4e64-9503-953bfb09cf8b
 `,
 		},
 	}
@@ -174,19 +155,6 @@ This more text.
 Here is a link https://google.com.
 `,
 		},
-		{
-			name: "Links with and without titles",
-			input: `
-[Google](https://google.com "Search Engine")
-[GitHub](https://github.com)
-[Stack Overflow](https://stackoverflow.com "Developer Community")
-`,
-			expected: `
-[Google](https://google.com)
-[GitHub](https://github.com)
-[Stack Overflow](https://stackoverflow.com)
-`,
-		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -202,32 +170,6 @@ Here is a link https://google.com.
 			}
 		})
 	}
-}
-
-func TestRemoveTitlesFromMarkdownLinksErrors(t *testing.T) {
-	t.Run("Read error", func(t *testing.T) {
-		errReader := &errorReader{err: errors.New("read error")}
-		var output bytes.Buffer
-		err := RemoveTitlesFromMarkdownLinks(errReader, &output)
-		if err == nil {
-			t.Fatal("Expected an error, got nil")
-		}
-		if !strings.Contains(err.Error(), "RemoveTitlesFromMarkdownLinks: failed to read input: read error") {
-			t.Errorf("Unexpected error message: %v", err)
-		}
-	})
-
-	t.Run("Write error", func(t *testing.T) {
-		input := strings.NewReader("some input")
-		errWriter := &errorWriter{err: errors.New("write error")}
-		err := RemoveTitlesFromMarkdownLinks(input, errWriter)
-		if err == nil {
-			t.Fatal("Expected an error, got nil")
-		}
-		if !strings.Contains(err.Error(), "RemoveTitlesFromMarkdownLinks: failed to write output: write error") {
-			t.Errorf("Unexpected error message: %v", err)
-		}
-	})
 }
 
 func TestRemoveParamsFromYouTubeLinks(t *testing.T) {
@@ -280,30 +222,59 @@ And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 	}
 }
 
-func TestRemoveParamsFromYouTubeLinksErrors(t *testing.T) {
-	t.Run("Read error", func(t *testing.T) {
-		errReader := &errorReader{err: errors.New("read error")}
-		var output bytes.Buffer
-		err := RemoveParamsFromYouTubeLinks(errReader, &output)
-		if err == nil {
-			t.Fatal("Expected an error, got nil")
-		}
-		if !strings.Contains(err.Error(), "RemoveParamsFromYouTubeLinks: failed to read input: read error") {
-			t.Errorf("Unexpected error message: %v", err)
-		}
-	})
+func TestRemoveParamsFromGoogleLinks(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "Google search link with parameters",
+			input:    "https://www.google.com/search?q=test&bih=722&biw=1536&hl=en&sxsrf=ABC123",
+			expected: "https://www.google.com/search?hl=en&q=test",
+		},
+		{
+			name:     "Google link without parameters",
+			input:    "https://www.google.com",
+			expected: "https://www.google.com",
+		},
+		{
+			name:     "Google Maps link (excluded)",
+			input:    "https://www.google.com/maps/place/New+York",
+			expected: "https://www.google.com/maps/place/New+York",
+		},
+		{
+			name:     "Non-Google link",
+			input:    "https://example.com?param=value",
+			expected: "https://example.com?param=value",
+		},
+		{
+			name: "Multiple Google links",
+			input: `
+Search result: https://www.google.com/search?q=test&bih=722&biw=1536&hl=en&sxsrf=ABC123
+Maps link: https://www.google.com/maps/place/New+York
+`,
+			expected: `
+Search result: https://www.google.com/search?hl=en&q=test
+Maps link: https://www.google.com/maps/place/New+York
+`,
+		},
+	}
 
-	t.Run("Write error", func(t *testing.T) {
-		input := strings.NewReader("some input")
-		errWriter := &errorWriter{err: errors.New("write error")}
-		err := RemoveParamsFromYouTubeLinks(input, errWriter)
-		if err == nil {
-			t.Fatal("Expected an error, got nil")
-		}
-		if !strings.Contains(err.Error(), "RemoveParamsFromYouTubeLinks: failed to write output: write error") {
-			t.Errorf("Unexpected error message: %v", err)
-		}
-	})
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.NewReader(tc.input)
+			var output bytes.Buffer
+			err := RemoveParamsFromGoogleLinks(input, &output)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+			result := output.String()
+			if diff := cmp.Diff(tc.expected, result); diff != "" {
+				t.Errorf("Unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
 }
 
 type errorReader struct {

@@ -2,6 +2,7 @@ package cmd
 
 import (
 	"github.com/gkwa/littlewill/core"
+	"github.com/gkwa/littlewill/core/links"
 	"github.com/spf13/cobra"
 )
 
@@ -13,9 +14,10 @@ var pathsFromStdinCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		core.ProcessPathsFromStdin(
 			cmd.Context(),
-			core.RemoveWhitespaceFromMarkdownLinks,
-			core.RemoveTitlesFromMarkdownLinks,
-			core.RemoveParamsFromYouTubeLinks,
+			links.RemoveWhitespaceFromMarkdownLinks,
+			links.RemoveTitlesFromMarkdownLinks,
+			links.RemoveParamsFromYouTubeLinks,
+			links.RemoveParamsFromGoogleLinks,
 		)
 	},
 }
