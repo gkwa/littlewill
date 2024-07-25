@@ -41,22 +41,37 @@ func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.
 	return nil
 }
 
-func ProcessPathsFromStdin(ctx context.Context, transform func(io.Reader, io.Writer) error) {
-	logger := logr.FromContextOrDiscard(ctx)
-	logger.V(1).Info("Processing paths from stdin")
-
+func ReadPathsFromStdin() ([]string, error) {
+	var paths []string
 	scanner := bufio.NewScanner(os.Stdin)
 	for scanner.Scan() {
-		path := scanner.Text()
-		logger.V(1).Info("Processing path", "path", path)
+		paths = append(paths, scanner.Text())
+	}
+	return paths, scanner.Err()
+}
 
+func ProcessPaths(ctx context.Context, paths []string, transform func(io.Reader, io.Writer) error) {
+	logger := logr.FromContextOrDiscard(ctx)
+	logger.V(1).Info("Processing paths")
+
+	for _, path := range paths {
+		logger.V(1).Info("Processing path", "path", path)
 		err := ProcessFile(ctx, path, transform)
 		if err != nil {
 			logger.Error(err, "Failed to process file", "path", path)
 		}
 	}
+}
 
-	if err := scanner.Err(); err != nil {
+func ProcessPathsFromStdin(ctx context.Context, transform func(io.Reader, io.Writer) error) {
+	logger := logr.FromContextOrDiscard(ctx)
+	logger.V(1).Info("Processing paths from stdin")
+
+	paths, err := ReadPathsFromStdin()
+	if err != nil {
 		logger.Error(err, "Error reading input")
+		return
 	}
+
+	ProcessPaths(ctx, paths, transform)
 }
