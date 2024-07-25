@@ -21,30 +21,39 @@ func ProcessFile(ctx context.Context, path string, transforms ...func(io.Reader,
 		return fmt.Errorf("failed to read original file: %w", err)
 	}
 
-	var processedContent bytes.Buffer
-	currentContent := bytes.NewReader(originalContent)
-
-	for _, transform := range transforms {
-		processedContent.Reset()
-		err = transform(currentContent, &processedContent)
-		if err != nil {
-			return fmt.Errorf("failed to process file: %w", err)
-		}
-		currentContent = bytes.NewReader(processedContent.Bytes())
+	processedContent, err := ApplyTransforms(originalContent, transforms...)
+	if err != nil {
+		return fmt.Errorf("failed to process file: %w", err)
 	}
 
-	if bytes.Equal(originalContent, processedContent.Bytes()) {
+	if bytes.Equal(originalContent, processedContent) {
 		logger.V(1).Info("File content unchanged, skipping write")
 		return nil
 	}
 
-	err = os.WriteFile(path, processedContent.Bytes(), 0o644)
+	err = os.WriteFile(path, processedContent, 0o644)
 	if err != nil {
 		return fmt.Errorf("failed to write processed content to file: %w", err)
 	}
 
 	logger.V(1).Info("Successfully processed and updated file")
 	return nil
+}
+
+func ApplyTransforms(content []byte, transforms ...func(io.Reader, io.Writer) error) ([]byte, error) {
+	var processedContent bytes.Buffer
+	currentContent := bytes.NewReader(content)
+
+	for _, transform := range transforms {
+		processedContent.Reset()
+		err := transform(currentContent, &processedContent)
+		if err != nil {
+			return nil, err
+		}
+		currentContent = bytes.NewReader(processedContent.Bytes())
+	}
+
+	return processedContent.Bytes(), nil
 }
 
 func ReadPathsFromStdin() ([]string, error) {
