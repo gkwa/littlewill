@@ -11,7 +11,6 @@ import (
 	"syscall"
 
 	"github.com/go-logr/logr"
-	"github.com/spf13/cobra"
 )
 
 var (
@@ -106,8 +105,7 @@ func ProcessFile(ctx context.Context, path string) error {
 	return nil
 }
 
-func ProcessPathsFromStdin(cmd *cobra.Command) {
-	ctx := cmd.Context()
+func ProcessPathsFromStdin(ctx context.Context) {
 	logger := logr.FromContextOrDiscard(ctx)
 	logger.V(1).Info("Processing paths from stdin")
 
