@@ -40,22 +40,6 @@ func ProcessFile(ctx context.Context, path string, transforms ...func(io.Reader,
 	return nil
 }
 
-func ApplyTransforms(content []byte, transforms ...func(io.Reader, io.Writer) error) ([]byte, error) {
-	var processedContent bytes.Buffer
-	currentContent := bytes.NewReader(content)
-
-	for _, transform := range transforms {
-		processedContent.Reset()
-		err := transform(currentContent, &processedContent)
-		if err != nil {
-			return nil, err
-		}
-		currentContent = bytes.NewReader(processedContent.Bytes())
-	}
-
-	return processedContent.Bytes(), nil
-}
-
 func ReadPathsFromStdin() ([]string, error) {
 	var paths []string
 	scanner := bufio.NewScanner(os.Stdin)
