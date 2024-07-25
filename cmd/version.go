@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/gkwa/littlewill/version"
 	"github.com/spf13/cobra"
 )
@@ -10,9 +12,8 @@ var versionCmd = &cobra.Command{
 	Short: "Print the version number of littlewill",
 	Long:  `All software has versions. This is littlewill's`,
 	Run: func(cmd *cobra.Command, args []string) {
-		logger := LoggerFrom(cmd.Context())
 		buildInfo := version.GetBuildInfo()
-		logger.Info("Version info", "version", buildInfo)
+		fmt.Println("Version info", "version", buildInfo)
 	},
 }
 
