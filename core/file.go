@@ -44,7 +44,7 @@ func init() {
 	}
 }
 
-func ProcessFile(ctx context.Context, path string) error {
+func ProcessFile(ctx context.Context, path string, transform func(io.Reader, io.Writer) error) error {
 	logger := logr.FromContextOrDiscard(ctx)
 	logger = logger.WithValues("file", path)
 	logger.Info("Processing file")
@@ -71,7 +71,7 @@ func ProcessFile(ctx context.Context, path string) error {
 	}
 
 	var processedContent bytes.Buffer
-	err = CleanupMarkdownLinks(bytes.NewReader(originalContent), &processedContent)
+	err = transform(bytes.NewReader(originalContent), &processedContent)
 	if err != nil {
 		return fmt.Errorf("failed to process file: %w", err)
 	}
@@ -105,7 +105,7 @@ func ProcessFile(ctx context.Context, path string) error {
 	return nil
 }
 
-func ProcessPathsFromStdin(ctx context.Context) {
+func ProcessPathsFromStdin(ctx context.Context, transform func(io.Reader, io.Writer) error) {
 	logger := logr.FromContextOrDiscard(ctx)
 	logger.V(1).Info("Processing paths from stdin")
 
@@ -114,7 +114,7 @@ func ProcessPathsFromStdin(ctx context.Context) {
 		path := scanner.Text()
 		logger.V(1).Info("Processing path", "path", path)
 
-		err := ProcessFile(ctx, path)
+		err := ProcessFile(ctx, path, transform)
 		if err != nil {
 			logger.Error(err, "Failed to process file", "path", path)
 		}
