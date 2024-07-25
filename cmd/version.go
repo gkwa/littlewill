@@ -13,7 +13,7 @@ var versionCmd = &cobra.Command{
 	Long:  `All software has versions. This is littlewill's`,
 	Run: func(cmd *cobra.Command, args []string) {
 		buildInfo := version.GetBuildInfo()
-		fmt.Println("Version info", "version", buildInfo)
+		fmt.Println(buildInfo)
 	},
 }
 
