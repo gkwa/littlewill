@@ -1,6 +1,7 @@
 package core
 
 import (
+	"bufio"
 	"context"
 	"fmt"
 	"os"
@@ -9,6 +10,7 @@ import (
 	"syscall"
 
 	"github.com/go-logr/logr"
+	"github.com/spf13/cobra"
 )
 
 var (
@@ -97,4 +99,25 @@ func ProcessFile(ctx context.Context, path string) error {
 
 	logger.Info("Successfully processed file")
 	return nil
+}
+
+func RunPathsFromStdin(cmd *cobra.Command) {
+	ctx := cmd.Context()
+	logger := logr.FromContextOrDiscard(ctx)
+	logger.V(1).Info("Processing paths from stdin")
+
+	scanner := bufio.NewScanner(os.Stdin)
+	for scanner.Scan() {
+		path := scanner.Text()
+		logger.V(1).Info("Processing path", "path", path)
+
+		err := ProcessFile(ctx, path)
+		if err != nil {
+			logger.Error(err, "Failed to process file", "path", path)
+		}
+	}
+
+	if err := scanner.Err(); err != nil {
+		logger.Error(err, "Error reading input")
+	}
 }
