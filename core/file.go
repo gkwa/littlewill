@@ -2,10 +2,11 @@ package core
 
 import (
 	"bufio"
+	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"os"
-	"path/filepath"
 	"runtime"
 	"syscall"
 
@@ -65,43 +66,47 @@ func ProcessFile(ctx context.Context, path string) error {
 		return err
 	}
 
-	dir := filepath.Dir(path)
-	tempFile, err := os.CreateTemp(dir, "littlewill-temp-*")
+	originalContent, err := io.ReadAll(originalFile)
 	if err != nil {
-		return fmt.Errorf("failed to create temporary file: %w", err)
+		return fmt.Errorf("failed to read original file: %w", err)
 	}
-	tempPath := tempFile.Name()
-	defer func() {
-		tempFile.Close()
-		os.Remove(tempPath)
-	}()
+
+	var processedContent bytes.Buffer
+	err = CleanupMarkdownLinks(bytes.NewReader(originalContent), &processedContent)
+	if err != nil {
+		return fmt.Errorf("failed to process file: %w", err)
+	}
+
+	if bytes.Equal(originalContent, processedContent.Bytes()) {
+		logger.Info("File content unchanged, skipping write")
+		return nil
+	}
 
 	_, err = originalFile.Seek(0, 0)
 	if err != nil {
 		return fmt.Errorf("failed to seek to the beginning of original file: %w", err)
 	}
-	err = CleanupMarkdownLinks(originalFile, tempFile)
+
+	err = originalFile.Truncate(0)
 	if err != nil {
-		return fmt.Errorf("failed to process file: %w", err)
+		return fmt.Errorf("failed to truncate original file: %w", err)
 	}
 
-	err = tempFile.Sync()
+	_, err = io.Copy(originalFile, &processedContent)
 	if err != nil {
-		return fmt.Errorf("failed to sync temporary file: %w", err)
+		return fmt.Errorf("failed to write processed content to file: %w", err)
 	}
 
-	tempFile.Close()
-
-	err = os.Rename(tempPath, path)
+	err = originalFile.Sync()
 	if err != nil {
-		return fmt.Errorf("failed to rename temporary file: %w", err)
+		return fmt.Errorf("failed to sync file: %w", err)
 	}
 
-	logger.Info("Successfully processed file")
+	logger.Info("Successfully processed and updated file")
 	return nil
 }
 
-func RunPathsFromStdin(cmd *cobra.Command) {
+func ProcessPathsFromStdin(cmd *cobra.Command) {
 	ctx := cmd.Context()
 	logger := logr.FromContextOrDiscard(ctx)
 	logger.V(1).Info("Processing paths from stdin")
