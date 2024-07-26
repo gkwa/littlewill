@@ -27,7 +27,7 @@ func contains(slice []string, item string) bool {
 	return false
 }
 
-func RemoveParamsFromGoogleLinks(r io.Reader, w io.Writer) error {
+func RemoveParamsFromGoogleURLs(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
 		return fmt.Errorf("RemoveParamsFromGoogleLinks: failed to read input: %w", err)

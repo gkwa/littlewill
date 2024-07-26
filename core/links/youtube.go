@@ -9,7 +9,7 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
-func RemoveParamsFromYouTubeLinks(r io.Reader, w io.Writer) error {
+func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
 		return fmt.Errorf("RemoveParamsFromYouTubeLinks: failed to read input: %w", err)
