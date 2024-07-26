@@ -6,6 +6,16 @@ import (
 	"regexp"
 )
 
+var youtubeCountRegex *regexp.Regexp
+
+func init() {
+	var err error
+	youtubeCountRegex, err = buildYouTubeCountRegex()
+	if err != nil {
+		panic(fmt.Sprintf("Failed to build YouTube count regex: %v", err))
+	}
+}
+
 func buildYouTubeCountRegex() (*regexp.Regexp, error) {
 	count := `\(\d+\)`
 	title := `.+?`
@@ -19,11 +29,6 @@ func buildYouTubeCountRegex() (*regexp.Regexp, error) {
 }
 
 func RemoveYouTubeCountFromMarkdownLinks(r io.Reader, w io.Writer) error {
-	youtubeCountRegex, err := buildYouTubeCountRegex()
-	if err != nil {
-		return fmt.Errorf("RemoveYouTubeCountFromLinks: failed to build regex: %w", err)
-	}
-
 	buf, err := io.ReadAll(r)
 	if err != nil {
 		return fmt.Errorf("RemoveYouTubeCountFromLinks: failed to read input: %w", err)
