@@ -11,10 +11,8 @@ import (
 	"github.com/go-logr/logr"
 )
 
-func ProcessFile(ctx context.Context, path string, transforms ...func(io.Reader, io.Writer) error) error {
-	logger := logr.FromContextOrDiscard(ctx)
-	logger = logger.WithValues("file", path)
-	logger.V(1).Info("Processing file")
+func ProcessFile(logger logr.Logger, path string, transforms ...func(io.Reader, io.Writer) error) error {
+	logger.V(1).Info("Processing file", "path", path)
 
 	originalContent, err := os.ReadFile(path)
 	if err != nil {
@@ -55,7 +53,7 @@ func ProcessPaths(ctx context.Context, paths []string, transforms ...func(io.Rea
 
 	for _, path := range paths {
 		logger.V(1).Info("Processing path", "path", path)
-		err := ProcessFile(ctx, path, transforms...)
+		err := ProcessFile(logger, path, transforms...)
 		if err != nil {
 			logger.Error(err, "Failed to process file", "path", path)
 		}
