@@ -10,6 +10,7 @@ import (
 
 	"github.com/gkwa/littlewill/internal/logger"
 	"github.com/go-logr/zapr"
+	"github.com/spf13/cobra"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 )
@@ -29,8 +30,19 @@ func TestCustomLogger(t *testing.T) {
 
 	cliLogger = customLogger
 
+	// Create a test command that uses the logger
+	testCmd := &cobra.Command{
+		Use: "test",
+		Run: func(cmd *cobra.Command, args []string) {
+			logger := LoggerFrom(cmd.Context())
+			logger.Info("Test log message")
+		},
+	}
+	rootCmd.AddCommand(testCmd)
+
+	// Execute the test command
 	cmd := rootCmd
-	cmd.SetArgs([]string{"version"})
+	cmd.SetArgs([]string{"test"})
 	err := cmd.Execute()
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -39,6 +51,10 @@ func TestCustomLogger(t *testing.T) {
 	logOutput := buf.String()
 	if logOutput == "" {
 		t.Error("Expected log output, but got none")
+	}
+
+	if !strings.Contains(logOutput, "Test log message") {
+		t.Errorf("Expected log output to contain 'Test log message', but got: %s", logOutput)
 	}
 
 	t.Logf("Log output: %s", logOutput)
@@ -58,8 +74,19 @@ func TestJSONLogger(t *testing.T) {
 	customLogger := logger.NewConsoleLogger(verbose, logFormat == "json")
 	cliLogger = customLogger
 
+	// Create a test command that uses the logger
+	testCmd := &cobra.Command{
+		Use: "test",
+		Run: func(cmd *cobra.Command, args []string) {
+			logger := LoggerFrom(cmd.Context())
+			logger.Info("Test log message")
+		},
+	}
+	rootCmd.AddCommand(testCmd)
+
+	// Execute the test command
 	cmd := rootCmd
-	cmd.SetArgs([]string{"version"})
+	cmd.SetArgs([]string{"test"})
 	err := cmd.Execute()
 	if err != nil {
 		t.Fatalf("Unexpected error: %v", err)
@@ -85,6 +112,14 @@ func TestJSONLogger(t *testing.T) {
 		err := json.Unmarshal([]byte(line), &jsonMap)
 		if err != nil {
 			t.Errorf("Expected valid JSON, but got error: %v", err)
+		}
+
+		if message, ok := jsonMap["message"]; ok {
+			if message != "Test log message" {
+				t.Errorf("Expected log message 'Test log message', but got: %v", message)
+			}
+		} else {
+			t.Error("Expected 'message' field in JSON log output, but it was not found")
 		}
 	}
 
