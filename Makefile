@@ -69,7 +69,7 @@ fmt: .timestamps/.fmt.time
 
 .PHONY: test # run all tests
 test:
-	go test -count=1 ./core/links
+	go test ./...
 
 .PHONY: lint # lint
 lint: .timestamps/.lint.time
