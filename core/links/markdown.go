@@ -46,4 +46,3 @@ func RemoveTitlesFromMarkdownLinks(r io.Reader, w io.Writer) error {
 
 	return nil
 }
-
