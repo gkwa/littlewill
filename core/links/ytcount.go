@@ -23,7 +23,7 @@ func buildYouTubeCountRegex() (*regexp.Regexp, error) {
 	url := `https?://(?:www\.)?` + youtubeURLs + `/[^\s]+`
 	optionalTitle := `(?:\s+"[^"]*")?`
 
-	pattern := fmt.Sprintf(`\[(%s)\s*(%s)\]\((%s)(%s)\)`, count, title, url, optionalTitle)
+	pattern := fmt.Sprintf(`\[\s*(%s)\s*(%s)\]\((%s)(%s)\)`, count, title, url, optionalTitle)
 
 	return regexp.Compile(pattern)
 }

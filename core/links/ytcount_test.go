@@ -25,6 +25,11 @@ func TestRemoveYouTubeCountFromLinks(t *testing.T) {
 			expected: "[Short YouTube Video](https://youtu.be/dQw4w9WgXcQ)",
 		},
 		{
+			name:     "YouTube short link with count and spaces",
+			input:    "[      (2345)        Short YouTube Video](https://youtu.be/dQw4w9WgXcQ)",
+			expected: "[Short YouTube Video](https://youtu.be/dQw4w9WgXcQ)",
+		},
+		{
 			name:     "YouTube link without count",
 			input:    "[Understanding Neovim #1 - Installation - YouTube](https://www.youtube.com/watch?v=87AXw9Quy9U&list=PLx2ksyallYzW4WNYHD9xOFrPRYGlntAft)",
 			expected: "[Understanding Neovim #1 - Installation - YouTube](https://www.youtube.com/watch?v=87AXw9Quy9U&list=PLx2ksyallYzW4WNYHD9xOFrPRYGlntAft)",
