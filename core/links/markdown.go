@@ -47,18 +47,3 @@ func RemoveTitlesFromMarkdownLinks(r io.Reader, w io.Writer) error {
 	return nil
 }
 
-type errorReader struct {
-	err error
-}
-
-func (e *errorReader) Read(p []byte) (n int, err error) {
-	return 0, e.err
-}
-
-type errorWriter struct {
-	err error
-}
-
-func (e *errorWriter) Write(p []byte) (n int, err error) {
-	return 0, e.err
-}
