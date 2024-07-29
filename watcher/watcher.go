@@ -3,10 +3,15 @@ package watcher
 import (
 	"context"
 	"fmt"
+	"io"
+	"os"
 	"path/filepath"
+	"time"
 
 	"github.com/fsnotify/fsnotify"
+	"github.com/gkwa/littlewill/core"
 	"github.com/go-logr/logr"
+	"github.com/spf13/cobra"
 )
 
 var ignoredEvents = []fsnotify.Op{
@@ -15,6 +20,35 @@ var ignoredEvents = []fsnotify.Op{
 }
 
 type EventHandler func(event fsnotify.Event, path string)
+
+func RunWatcher(cmd *cobra.Command, args []string, patterns []string, filterType string, linkTransforms []func(io.Reader, io.Writer) error) {
+	logger := logr.FromContextOrDiscard(cmd.Context())
+
+	if len(args) == 0 {
+		err := cmd.Usage()
+		if err != nil {
+			cmd.PrintErrf("Error: %v\n", err)
+		}
+		cmd.PrintErrln("Error: directory path is required")
+		os.Exit(1)
+	}
+
+	dirToWatch := args[0]
+	ctx := cmd.Context()
+	handler := func(event fsnotify.Event, path string) {
+		time.Sleep(100 * time.Millisecond)
+		fmt.Printf("Event: %s, File: %s\n", event.Op, path)
+		err := core.ProcessFile(logger, path, linkTransforms...)
+		if err != nil {
+			logger.Error(err, "Failed to process file", "path", path)
+		}
+	}
+	err := Run(ctx, dirToWatch, patterns, filterType, handler)
+	if err != nil {
+		cmd.PrintErrf("Error: %v\n", err)
+		os.Exit(1)
+	}
+}
 
 func Run(ctx context.Context, dirPath string, patterns []string, filterTypeStr string, handler EventHandler) error {
 	logger := logr.FromContextOrDiscard(ctx)
