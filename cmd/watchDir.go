@@ -1,6 +1,8 @@
 package cmd
 
 import (
+	"os"
+
 	"github.com/gkwa/littlewill/watcher"
 	"github.com/spf13/cobra"
 )
@@ -21,7 +23,23 @@ Cobra is a CLI library for Go that empowers applications.
 This application is a tool to generate the needed files
 to quickly create a Cobra application.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		watcher.RunWatcher(cmd, args, patterns, filterType, linkTransforms)
+		if len(args) == 0 {
+			err := cmd.Usage()
+			if err != nil {
+				cmd.PrintErrf("Error: %v\n", err)
+			}
+			cmd.PrintErrln("Error: directory path is required")
+			os.Exit(1)
+		}
+
+		dir := args[0]
+		watcher.RunWatcher(
+			cmd.Context(),
+			dir,
+			patterns,
+			filterType,
+			linkTransforms,
+		)
 	},
 }
 

@@ -10,42 +10,52 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gkwa/littlewill/core"
+	"github.com/gkwa/littlewill/file"
 	"github.com/go-logr/logr"
-	"github.com/spf13/cobra"
 )
 
 var ignoredEvents = []fsnotify.Op{
 	fsnotify.Chmod,
 	fsnotify.Remove,
+	fsnotify.Rename,
 }
 
 type EventHandler func(event fsnotify.Event, path string)
 
-func RunWatcher(cmd *cobra.Command, args []string, patterns []string, filterType string, linkTransforms []func(io.Reader, io.Writer) error) {
-	logger := logr.FromContextOrDiscard(cmd.Context())
+func RunWatcher(
+	ctx context.Context,
+	dirToWatch string,
+	patterns []string,
+	filterType string,
+	linkTransforms []func(io.Reader, io.Writer) error,
+) {
+	logger := logr.FromContextOrDiscard(ctx)
 
-	if len(args) == 0 {
-		err := cmd.Usage()
-		if err != nil {
-			cmd.PrintErrf("Error: %v\n", err)
-		}
-		cmd.PrintErrln("Error: directory path is required")
-		os.Exit(1)
-	}
-
-	dirToWatch := args[0]
-	ctx := cmd.Context()
 	handler := func(event fsnotify.Event, path string) {
 		time.Sleep(100 * time.Millisecond)
 		fmt.Printf("Event: %s, File: %s\n", event.Op, path)
-		err := core.ProcessFile(logger, path, linkTransforms...)
+
+		f := file.File{Path: path}
+
+		isSymlink, err := f.IsSymlink()
+		if err != nil {
+			logger.Error(err, "Failed to check if path is symlink", "path", path)
+		}
+		logger.V(1).Info("file type check", "path", path, "type", f.FileType())
+
+		if isSymlink {
+			logger.V(1).Info("skipping symlink", "path", path)
+			return
+		}
+
+		err = core.ProcessFile(logger, path, linkTransforms...)
 		if err != nil {
 			logger.Error(err, "Failed to process file", "path", path)
 		}
 	}
 	err := Run(ctx, dirToWatch, patterns, filterType, handler)
 	if err != nil {
-		cmd.PrintErrf("Error: %v\n", err)
+		fmt.Fprintf(os.Stderr, "error: %v\n", err)
 		os.Exit(1)
 	}
 }
