@@ -12,7 +12,12 @@ import (
 	"github.com/go-logr/logr"
 )
 
-func ProcessFile(logger logr.Logger, path string, transforms ...func(io.Reader, io.Writer) error) error {
+func ProcessFile(
+	logger logr.Logger,
+	path string,
+	transforms ...func(io.Reader, io.Writer) error,
+) error {
+	// skip past symlinks
 	f := file.File{Path: path}
 
 	isSymlink, err := f.IsSymlink()
@@ -26,6 +31,7 @@ func ProcessFile(logger logr.Logger, path string, transforms ...func(io.Reader, 
 		return nil
 	}
 
+	// ok we get to files now
 	originalContent, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("failed to read original file: %w", err)
