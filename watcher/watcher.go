@@ -31,7 +31,7 @@ func RunWatcher(
 	logger := logr.FromContextOrDiscard(ctx)
 
 	handler := func(event fsnotify.Event, path string) {
-		time.Sleep(100 * time.Millisecond)
+		time.Sleep(time.Second)
 		fmt.Printf("Event: %s, File: %s\n", event.Op, path)
 
 		err := core.ProcessFile(logger, path, linkTransforms...)
