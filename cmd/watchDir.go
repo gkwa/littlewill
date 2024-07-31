@@ -1,8 +1,6 @@
 package cmd
 
 import (
-	"os"
-
 	"github.com/gkwa/littlewill/watcher"
 	"github.com/spf13/cobra"
 )
@@ -15,23 +13,18 @@ var (
 var watchDirCmd = &cobra.Command{
 	Use:     "watch-dir [directory]",
 	Aliases: []string{"wd"},
-	Short:   "A brief description of your command",
-	Long: `A longer description that spans multiple lines and likely contains examples
-and usage of using your command. For example:
+	Args:    cobra.ExactArgs(1),
+	Short:   "Watch a directory for file changes",
+	Long: `Watch a directory for file changes and process modified files.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+You can specify patterns to filter which files to watch. If no patterns are specified,
+all files will be watched. Patterns use standard glob syntax.
+
+Examples:
+  littlewill watch-dir /path/to/directory
+  littlewill watch-dir /path/to/directory --patterns "*.md,*.txt"
+  littlewill watch-dir /path/to/directory --patterns "doc_*.md" --patterns "report_*.txt"`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) == 0 {
-			err := cmd.Usage()
-			if err != nil {
-				cmd.PrintErrf("Error: %v\n", err)
-			}
-			cmd.PrintErrln("Error: directory path is required")
-			os.Exit(1)
-		}
-
 		dir := args[0]
 		watcher.RunWatcher(
 			cmd.Context(),
@@ -45,6 +38,17 @@ to quickly create a Cobra application.`,
 
 func init() {
 	rootCmd.AddCommand(watchDirCmd)
-	watchDirCmd.Flags().StringSliceVar(&patterns, "patterns", []string{}, "File patterns to watch")
-	watchDirCmd.Flags().StringVar(&filterType, "filter-type", "write", "Filter type (create, write, remove, rename, chmod)")
+
+	watchDirCmd.Flags().StringSliceVarP(&patterns, "patterns", "p", []string{}, `File patterns to watch (comma-separated or multiple flags).
+Examples:
+  --patterns "*.md,*.txt"
+  --patterns "*.go" --patterns "*.yaml"
+Default: watch all files`)
+
+	watchDirCmd.Flags().StringVarP(&filterType, "filter-type", "f", "write", `Event type to filter on. Options:
+  create: Only watch for new files
+  write: Watch for file modifications (default)
+  remove: Watch for file deletions
+  rename: Watch for file renames
+  chmod: Watch for permission changes`)
 }

@@ -10,7 +10,6 @@ import (
 
 	"github.com/fsnotify/fsnotify"
 	"github.com/gkwa/littlewill/core"
-	"github.com/gkwa/littlewill/file"
 	"github.com/go-logr/logr"
 )
 
@@ -35,20 +34,7 @@ func RunWatcher(
 		time.Sleep(100 * time.Millisecond)
 		fmt.Printf("Event: %s, File: %s\n", event.Op, path)
 
-		f := file.File{Path: path}
-
-		isSymlink, err := f.IsSymlink()
-		if err != nil {
-			logger.Error(err, "Failed to check if path is symlink", "path", path)
-		}
-		logger.V(1).Info("file type check", "path", path, "type", f.FileType())
-
-		if isSymlink {
-			logger.V(1).Info("skipping symlink", "path", path)
-			return
-		}
-
-		err = core.ProcessFile(logger, path, linkTransforms...)
+		err := core.ProcessFile(logger, path, linkTransforms...)
 		if err != nil {
 			logger.Error(err, "Failed to process file", "path", path)
 		}

@@ -8,10 +8,24 @@ import (
 	"io"
 	"os"
 
+	"github.com/gkwa/littlewill/file"
 	"github.com/go-logr/logr"
 )
 
 func ProcessFile(logger logr.Logger, path string, transforms ...func(io.Reader, io.Writer) error) error {
+	f := file.File{Path: path}
+
+	isSymlink, err := f.IsSymlink()
+	if err != nil {
+		logger.Error(err, "Failed to check if path is symlink", "path", path)
+	}
+	logger.V(1).Info("file type check", "path", path, "type", f.FileType())
+
+	if isSymlink {
+		logger.V(1).Info("skipping symlink", "path", path)
+		return nil
+	}
+
 	originalContent, err := os.ReadFile(path)
 	if err != nil {
 		return fmt.Errorf("failed to read original file: %w", err)
