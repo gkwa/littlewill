@@ -60,7 +60,13 @@ func RunWatcher(
 	}
 }
 
-func Run(ctx context.Context, dirPath string, patterns []string, filterTypeStr string, handler EventHandler) error {
+func Run(
+	ctx context.Context,
+	dirPath string,
+	patterns []string,
+	filterTypeStr string,
+	handler EventHandler,
+) error {
 	logger := logr.FromContextOrDiscard(ctx)
 	logger.Info("Starting directory watcher", "directory", dirPath)
 
