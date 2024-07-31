@@ -11,7 +11,7 @@ var (
 )
 
 var watchDirCmd = &cobra.Command{
-	Use:     "watch-dir [directory]",
+	Use:     "watch-dir <directory>",
 	Aliases: []string{"wd"},
 	Args:    cobra.ExactArgs(1),
 	Short:   "Watch a directory for file changes",
