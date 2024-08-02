@@ -46,7 +46,7 @@ And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 		t.Run(tc.name, func(t *testing.T) {
 			input := strings.NewReader(tc.input)
 			var output bytes.Buffer
-			err := RemoveYoutubeParams(input, &output)
+			err := RemoveYoutubeParamsFromURLs(input, &output)
 			if err != nil {
 				t.Fatalf("Unexpected error: %v", err)
 			}
