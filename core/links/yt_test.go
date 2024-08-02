@@ -15,8 +15,8 @@ func TestRemoveParamsFromYouTubeLinks(t *testing.T) {
 		expected string
 	}{
 		{
-			name:     "YouTube link with si parameter",
-			input:    "https://youtu.be/JSKJbGi5oNA?si=b2GkFDivckm1k-Mq",
+			name:     "YouTube link with si and app parameters",
+			input:    "https://youtu.be/JSKJbGi5oNA?si=b2GkFDivckm1k-Mq&app=Desktop",
 			expected: "https://youtu.be/JSKJbGi5oNA",
 		},
 		{
