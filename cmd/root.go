@@ -24,8 +24,7 @@ var (
 var linkTransforms = []func(io.Reader, io.Writer) error{
 	links.RemoveWhitespaceFromMarkdownLinks,
 	links.RemoveTitlesFromMarkdownLinks,
-	links.RemoveParamsFromYouTubeURLsInReader,
-	links.RemoveParamsFromGoogleURLs,
+	links.ProcessYoutubeURLs,
 	links.RemoveYouTubeCountFromMarkdownLinks,
 }
 
