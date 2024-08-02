@@ -38,7 +38,7 @@ func isYouTubeURL(u *url.URL) bool {
 	return false
 }
 
-func ProcessYoutubeURLs(r io.Reader, w io.Writer) error {
+func RemoveParamsFromYoutubeURLs(r io.Reader, w io.Writer) error {
 	processors := []URLProcessor{
 		&YouTubeURLProcessor{},
 	}
