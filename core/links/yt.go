@@ -31,6 +31,7 @@ func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 			if strings.Contains(strings.ToLower(u.Hostname()), domain) {
 				q := u.Query()
 				q.Del("si")
+				q.Del("app")
 				u.RawQuery = q.Encode()
 				return []byte(u.String())
 			}

@@ -77,7 +77,6 @@ func cleanGoogleURL(urlStr string) (string, []string, error) {
 	q := u.Query()
 
 	paramsToRemove := []string{
-		"app",
 		"bih",
 		"biw",
 		"client",
