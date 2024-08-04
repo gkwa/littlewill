@@ -43,7 +43,6 @@ qfc Chocolate Ice Cream - Google Search](https://www.google.com/search?q=qfc+Cho
 `,
 			expected: `![Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)`,
 		},
-
 		{
 			name: "Copying text into obsidian brings in funy formatting that breaks links - part 2",
 			input: `
@@ -51,6 +50,20 @@ qfc Chocolate Ice Cream - Google Search](https://www.google.com/search?q=qfc+Cho
 
 
 			[Item
+
+			media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)
+			
+
+`,
+			expected: `[Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)`,
+		},
+		{
+			name: "Copying text into obsidian brings in funy formatting that breaks links - part 3",
+			input: `
+
+
+
+			[ Item
 
 			media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)
 			
