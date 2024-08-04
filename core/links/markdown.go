@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"io"
 	"regexp"
+	"strings"
 )
 
 var (
-	markdownLinkRegex          = regexp.MustCompile(`\[\s*(\S.*?)\s*\]\(`)
+	markdownLinkRegex          = regexp.MustCompile(`\[([^][]+)\](\(((?:[^()]+|\([^()]*\))+)\))`)
 	markdownLinkWithTitleRegex = regexp.MustCompile(`\[([^\]]+)\]\(([^)]+)\s+"[^"]+"\)`)
+	whitespaceRegex            = regexp.MustCompile(`[\s\t\n\r]+`)
 )
 
 func RemoveWhitespaceFromMarkdownLinks(r io.Reader, w io.Writer) error {
@@ -18,7 +20,14 @@ func RemoveWhitespaceFromMarkdownLinks(r io.Reader, w io.Writer) error {
 	}
 
 	cleaned := markdownLinkRegex.ReplaceAllFunc(buf, func(match []byte) []byte {
-		return markdownLinkRegex.ReplaceAll(match, []byte("[$1]("))
+		submatches := markdownLinkRegex.FindSubmatch(match)
+		if len(submatches) >= 4 {
+			description := whitespaceRegex.ReplaceAllString(string(submatches[1]), " ")
+			description = strings.TrimSpace(description)
+			url := string(submatches[3])
+			return []byte(fmt.Sprintf("[%s](%s)", description, url))
+		}
+		return match
 	})
 
 	_, err = w.Write(cleaned)
