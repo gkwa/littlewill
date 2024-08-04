@@ -4,26 +4,13 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
 )
 
-type URLProcessor interface {
-	Process(url *url.URL) *url.URL
-}
-
-type YouTubeURLProcessor struct{}
-
-func (p *YouTubeURLProcessor) Process(u *url.URL) *url.URL {
-	if isYouTubeURL(u) {
-		q := u.Query()
-		q.Del("si")
-		q.Del("app")
-		u.RawQuery = q.Encode()
-	}
-	return u
-}
+var textFragmentRegex = regexp.MustCompile(`^:~:text=`)
 
 func isYouTubeURL(u *url.URL) bool {
 	youTubeDomains := []string{
@@ -38,14 +25,32 @@ func isYouTubeURL(u *url.URL) bool {
 	return false
 }
 
-func RemoveYoutubeParamsFromURLs(r io.Reader, w io.Writer) error {
-	processors := []URLProcessor{
-		&YouTubeURLProcessor{},
-	}
-	return processURLs(r, w, processors...)
+func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		if isYouTubeURL(u) {
+			q := u.Query()
+			q.Del("si")
+			q.Del("app")
+			u.RawQuery = q.Encode()
+		}
+		return u
+	})
 }
 
-func processURLs(r io.Reader, w io.Writer, processors ...URLProcessor) error {
+func RemoveTextFragments(r io.Reader, w io.Writer) error {
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		if isTextFragment(u.Fragment) {
+			u.Fragment = ""
+		}
+		return u
+	})
+}
+
+func isTextFragment(fragment string) bool {
+	return textFragmentRegex.MatchString(fragment)
+}
+
+func processURLs(r io.Reader, w io.Writer, processor func(*url.URL) *url.URL) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
 		return fmt.Errorf("processURLs: failed to read input: %w", err)
@@ -58,9 +63,7 @@ func processURLs(r io.Reader, w io.Writer, processors ...URLProcessor) error {
 			return match
 		}
 
-		for _, processor := range processors {
-			u = processor.Process(u)
-		}
+		u = processor(u)
 
 		return []byte(u.String())
 	})
