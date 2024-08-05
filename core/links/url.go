@@ -10,7 +10,7 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
-var textFragmentRegex = regexp.MustCompile(`^:~:text=`)
+var textFragmentRegex = regexp.MustCompile(`(?i)^:~:text=`)
 
 func isYouTubeURL(u *url.URL) bool {
 	youTubeDomains := []string{
