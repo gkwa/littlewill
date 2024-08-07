@@ -18,6 +18,37 @@ var excludeParams = []string{
 	"tbm",
 }
 
+var ParamsToRemove = []string{
+	"bih",
+	"biw",
+	"client",
+	"dpr",
+	"ei",
+	"fbs",
+	"gs_lcp",
+	"gs_lcrp",
+	"gs_lp",
+	"gs_ssp",
+	"hl",
+	"ictx",
+	"ie",
+	"oq",
+	"prmd",
+	"sa",
+	"sca_esv",
+	"sca_upv",
+	"sclient",
+	"source",
+	"sourceid",
+	"spell",
+	"sqi",
+	"sxsrf",
+	"uact",
+	// "udm", // keep image search links in tact
+	"uds",
+	"ved",
+}
+
 func RemoveParamsFromGoogleURLs(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
@@ -76,41 +107,10 @@ func cleanGoogleURL(urlStr string) (string, []string, error) {
 
 	q := u.Query()
 
-	paramsToRemove := []string{
-		"bih",
-		"biw",
-		"client",
-		"dpr",
-		"ei",
-		"fbs",
-		"gs_lcp",
-		"gs_lcrp",
-		"gs_lp",
-		"gs_ssp",
-		"hl",
-		"ictx",
-		"ie",
-		"oq",
-		"prmd",
-		"sa",
-		"sca_esv",
-		"sca_upv",
-		"sclient",
-		"source",
-		"sourceid",
-		"spell",
-		"sqi",
-		"sxsrf",
-		"uact",
-		// "udm", // keep image search links in tact
-		"uds",
-		"ved",
-	}
-
 	var remainingParams []string
 
 	for param := range q {
-		if contains(excludeParams, param) || !contains(paramsToRemove, param) {
+		if contains(excludeParams, param) || !contains(ParamsToRemove, param) {
 			remainingParams = append(remainingParams, param)
 			continue
 		}
