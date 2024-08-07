@@ -18,15 +18,6 @@ var excludeParams = []string{
 	"tbm",
 }
 
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
-}
-
 func RemoveParamsFromGoogleURLs(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
@@ -68,6 +59,15 @@ func isExcludedURL(urlStr string) bool {
 	return false
 }
 
+func contains(slice []string, item string) bool {
+	for _, s := range slice {
+		if s == item {
+			return true
+		}
+	}
+	return false
+}
+
 func cleanGoogleURL(urlStr string) (string, []string, error) {
 	u, err := url.Parse(urlStr)
 	if err != nil {
@@ -102,7 +102,7 @@ func cleanGoogleURL(urlStr string) (string, []string, error) {
 		"sqi",
 		"sxsrf",
 		"uact",
-		// "udm", // no! don't remove this one, udm=2 means its an image search, eg https://www.google.com/search?udm=2&q=poison+ivy
+		// "udm", // keep image search links in tact
 		"uds",
 		"ved",
 	}
