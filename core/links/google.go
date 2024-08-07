@@ -13,7 +13,7 @@ var excludePatterns = []string{
 	"google.com/maps/",
 }
 
-var excludeParams = []string{
+var KeepParams = []string{
 	"q",
 	"tbm",
 }
@@ -110,7 +110,7 @@ func cleanGoogleURL(urlStr string) (string, []string, error) {
 	var remainingParams []string
 
 	for param := range q {
-		if contains(excludeParams, param) || !contains(ParamsToRemove, param) {
+		if contains(KeepParams, param) || !contains(ParamsToRemove, param) {
 			remainingParams = append(remainingParams, param)
 			continue
 		}
