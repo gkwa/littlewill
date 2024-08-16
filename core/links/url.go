@@ -25,6 +25,10 @@ func isYouTubeURL(u *url.URL) bool {
 	return false
 }
 
+func isSubstackURL(u *url.URL) bool {
+	return strings.HasSuffix(strings.ToLower(u.Hostname()), ".substack.com")
+}
+
 func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 	return processURLs(r, w, func(u *url.URL) *url.URL {
 		if isYouTubeURL(u) {
@@ -32,6 +36,15 @@ func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 			q.Del("si")
 			q.Del("app")
 			u.RawQuery = q.Encode()
+		}
+		return u
+	})
+}
+
+func RemoveParamsFromSubstackURLs(r io.Reader, w io.Writer) error {
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		if isSubstackURL(u) {
+			u.RawQuery = ""
 		}
 		return u
 	})

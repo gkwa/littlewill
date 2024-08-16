@@ -58,6 +58,56 @@ And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 	}
 }
 
+func TestRemoveParamsFromSubstackURLs(t *testing.T) {
+	testCases := []struct {
+		name     string
+		input    string
+		expected string
+	}{
+		{
+			name:     "Substack link with parameters",
+			input:    "https://example.substack.com/p/article-title?utm_source=twitter&utm_medium=social",
+			expected: "https://example.substack.com/p/article-title",
+		},
+		{
+			name:     "Substack link without parameters",
+			input:    "https://another.substack.com/p/another-article",
+			expected: "https://another.substack.com/p/another-article",
+		},
+		{
+			name:     "Non-Substack link",
+			input:    "https://example.com?param=value",
+			expected: "https://example.com?param=value",
+		},
+		{
+			name: "Multiple Substack links",
+			input: `
+Check out this article: https://first.substack.com/p/title?utm_source=twitter
+And this one: https://second.substack.com/p/another-title?utm_campaign=post
+`,
+			expected: `
+Check out this article: https://first.substack.com/p/title
+And this one: https://second.substack.com/p/another-title
+`,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			input := strings.NewReader(tc.input)
+			var output bytes.Buffer
+			err := RemoveParamsFromSubstackURLs(input, &output)
+			if err != nil {
+				t.Fatalf("Unexpected error: %v", err)
+			}
+			result := output.String()
+			if diff := cmp.Diff(tc.expected, result); diff != "" {
+				t.Errorf("Unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
 func TestRemoveTextFragments(t *testing.T) {
 	testCases := []struct {
 		name     string

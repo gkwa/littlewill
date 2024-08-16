@@ -26,6 +26,7 @@ var linkTransforms = []func(io.Reader, io.Writer) error{
 	links.RemoveTitlesFromMarkdownLinks,
 	links.RemoveParamsFromGoogleURLs,
 	links.RemoveParamsFromYouTubeURLs,
+	links.RemoveParamsFromSubstackURLs,
 	links.RemoveTextFragments,
 	links.RemoveYouTubeCountFromMarkdownLinks,
 }
