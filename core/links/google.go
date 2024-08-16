@@ -32,6 +32,7 @@ var ParamsToRemove = []string{
 	"hl",
 	"ictx",
 	"ie",
+	"num",
 	"oq",
 	"prmd",
 	"sa",
