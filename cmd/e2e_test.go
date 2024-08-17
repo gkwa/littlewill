@@ -71,6 +71,13 @@ qfc Chocolate Ice Cream - Google Search](https://www.google.com/search?q=qfc+Cho
 `,
 			expected: `[Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)`,
 		},
+		{
+			name: "Urls in code blocks with variable substitution are not adjusted",
+			input: `` + "``` bash" + `
+https://github.com/gkwa/${version}/test.bin` + "```" + ``,
+			expected: `` + "``` bash" + `
+https://github.com/gkwa/${version}/test.bin` + "```" + ``,
+		},
 	}
 
 	for _, tc := range testCases {
