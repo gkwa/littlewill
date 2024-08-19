@@ -50,7 +50,7 @@ func RemoveParamsFromSubstackURLs(r io.Reader, w io.Writer) error {
 	})
 }
 
-func RemoveTextFragments(r io.Reader, w io.Writer) error {
+func RemoveTextFragmentsFromURLs(r io.Reader, w io.Writer) error {
 	return processURLs(r, w, func(u *url.URL) *url.URL {
 		if isTextFragment(u.Fragment) {
 			u.Fragment = ""
