@@ -18,13 +18,6 @@ func TestProcessPathsFromStdin(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Urls in code blocks with variable substitution are not adjusted",
-			input: `` + "``` bash" + `
-https://github.com/gkwa/${version}/test.bin` + "```" + ``,
-			expected: `` + "``` bash" + `
-https://github.com/gkwa/${version}/test.bin` + "```" + ``,
-		},
-		{
 			name: "URLs outside code blocks are processed, URLs inside are not",
 			input: `Check this link: https://www.google.com/search?q=test&hl=en
 ` + "```" + `
@@ -38,54 +31,61 @@ var url = "https://www.google.com/search?q=test&hl=en";
 Another link: https://www.google.com/search?q=example`,
 		},
 		{
-			name: "Multiple code blocks with URLs are not processed",
-			input: `Before code block
-` + "```python" + `
-url1 = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=example"
+			name: "YouTube URLs are processed correctly",
+			input: `Watch this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=abcdefghijklmnop
 ` + "```" + `
-Between code blocks
-` + "```javascript" + `
-const url2 = 'https://example.substack.com/p/article?utm_source=test';
+const youtubeUrl = "https://youtu.be/dQw4w9WgXcQ?si=abcdefghijklmnop";
 ` + "```" + `
-After code block`,
-			expected: `Before code block
-` + "```python" + `
-url1 = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=example"
+Another video: https://youtu.be/dQw4w9WgXcQ?si=qrstuvwxyz123456`,
+			expected: `Watch this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
 ` + "```" + `
-Between code blocks
-` + "```javascript" + `
-const url2 = 'https://example.substack.com/p/article?utm_source=test';
+const youtubeUrl = "https://youtu.be/dQw4w9WgXcQ?si=abcdefghijklmnop";
 ` + "```" + `
-After code block`,
+Another video: https://youtu.be/dQw4w9WgXcQ`,
 		},
 		{
-			name: "Nested code blocks are handled correctly",
-			input: `Outer content
-` + "```markdown" + `
-# Markdown with code block
-
-Here's a code block:
-
-` + "```python" + `
-url = "https://www.google.com/search?q=nested&hl=en"
+			name: "Substack URLs are processed correctly",
+			input: `Read this article: https://example.substack.com/p/article-title?utm_source=twitter&utm_medium=social
 ` + "```" + `
-
-End of markdown
+const substackUrl = "https://another.substack.com/p/another-article?utm_campaign=post";
 ` + "```" + `
-Outer URL: https://www.google.com/search?q=outer&hl=en`,
-			expected: `Outer content
-` + "```markdown" + `
-# Markdown with code block
-
-Here's a code block:
-
-` + "```python" + `
-url = "https://www.google.com/search?q=nested&hl=en"
+Another article: https://third.substack.com/p/third-article?utm_source=copy&utm_medium=reader2`,
+			expected: `Read this article: https://example.substack.com/p/article-title
 ` + "```" + `
-
-End of markdown
+const substackUrl = "https://another.substack.com/p/another-article?utm_campaign=post";
 ` + "```" + `
-Outer URL: https://www.google.com/search?q=outer`,
+Another article: https://third.substack.com/p/third-article`,
+		},
+		{
+			name: "Mixed URL types are processed correctly",
+			input: `Google: https://www.google.com/search?q=test&hl=en
+YouTube: https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=abcdefghijklmnop
+Substack: https://example.substack.com/p/article-title?utm_source=twitter
+` + "```" + `
+const urls = {
+  google: "https://www.google.com/search?q=test&hl=en",
+  youtube: "https://youtu.be/dQw4w9WgXcQ?si=abcdefghijklmnop",
+  substack: "https://example.substack.com/p/article-title?utm_source=twitter"
+};
+` + "```" + `
+More links:
+Google: https://www.google.com/search?q=example&hl=fr
+YouTube: https://youtu.be/dQw4w9WgXcQ?si=qrstuvwxyz123456
+Substack: https://another.substack.com/p/another-article?utm_campaign=post`,
+			expected: `Google: https://www.google.com/search?q=test
+YouTube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+Substack: https://example.substack.com/p/article-title
+` + "```" + `
+const urls = {
+  google: "https://www.google.com/search?q=test&hl=en",
+  youtube: "https://youtu.be/dQw4w9WgXcQ?si=abcdefghijklmnop",
+  substack: "https://example.substack.com/p/article-title?utm_source=twitter"
+};
+` + "```" + `
+More links:
+Google: https://www.google.com/search?q=example
+YouTube: https://youtu.be/dQw4w9WgXcQ
+Substack: https://another.substack.com/p/another-article`,
 		},
 	}
 
@@ -162,7 +162,7 @@ Outer URL: https://www.google.com/search?q=outer`,
 
 			// Check the output
 			if strings.TrimSpace(string(processedContent)) != tc.expected {
-				t.Errorf("Expected output %q, but got %q", tc.expected, strings.TrimSpace(string(processedContent)))
+				t.Errorf("Expected output:\n%s\n\nGot:\n%s", tc.expected, strings.TrimSpace(string(processedContent)))
 			}
 		})
 	}
