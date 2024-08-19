@@ -69,19 +69,29 @@ func processURLs(r io.Reader, w io.Writer, processor func(*url.URL) *url.URL) er
 		return fmt.Errorf("processURLs: failed to read input: %w", err)
 	}
 
-	rxStrict := xurls.Strict()
-	cleaned := rxStrict.ReplaceAllFunc(buf, func(match []byte) []byte {
-		u, err := url.Parse(string(match))
-		if err != nil {
-			return match
+	inCodeBlock := false
+	lines := strings.Split(string(buf), "\n")
+	for i, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "```") {
+			inCodeBlock = !inCodeBlock
 		}
 
-		u = processor(u)
+		if !inCodeBlock {
+			rxStrict := xurls.Strict()
+			lines[i] = rxStrict.ReplaceAllStringFunc(line, func(match string) string {
+				u, err := url.Parse(match)
+				if err != nil {
+					return match
+				}
 
-		return []byte(u.String())
-	})
+				u = processor(u)
 
-	_, err = w.Write(cleaned)
+				return u.String()
+			})
+		}
+	}
+
+	_, err = w.Write([]byte(strings.Join(lines, "\n")))
 	if err != nil {
 		return fmt.Errorf("processURLs: failed to write output: %w", err)
 	}

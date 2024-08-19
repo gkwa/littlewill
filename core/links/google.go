@@ -56,25 +56,34 @@ func RemoveParamsFromGoogleURLs(r io.Reader, w io.Writer) error {
 		return fmt.Errorf("RemoveParamsFromGoogleLinks: failed to read input: %w", err)
 	}
 
-	rxStrict := xurls.Strict()
-	cleaned := rxStrict.ReplaceAllFunc(buf, func(match []byte) []byte {
-		urlStr := string(match)
-		if isExcludedURL(urlStr) {
-			return match
+	inCodeBlock := false
+	lines := strings.Split(string(buf), "\n")
+	for i, line := range lines {
+		if strings.HasPrefix(strings.TrimSpace(line), "```") {
+			inCodeBlock = !inCodeBlock
 		}
 
-		if strings.Contains(strings.ToLower(urlStr), "google.com") {
-			cleanedURL, _, err := cleanGoogleURL(urlStr)
-			if err != nil {
+		if !inCodeBlock {
+			rxStrict := xurls.Strict()
+			lines[i] = rxStrict.ReplaceAllStringFunc(line, func(match string) string {
+				if isExcludedURL(match) {
+					return match
+				}
+
+				if strings.Contains(strings.ToLower(match), "google.com") {
+					cleanedURL, _, err := cleanGoogleURL(match)
+					if err != nil {
+						return match
+					}
+					return cleanedURL
+				}
+
 				return match
-			}
-			return []byte(cleanedURL)
+			})
 		}
+	}
 
-		return match
-	})
-
-	_, err = w.Write(cleaned)
+	_, err = w.Write([]byte(strings.Join(lines, "\n")))
 	if err != nil {
 		return fmt.Errorf("RemoveParamsFromGoogleLinks: failed to write output: %w", err)
 	}
