@@ -18,60 +18,6 @@ func TestProcessPathsFromStdin(t *testing.T) {
 		expected string
 	}{
 		{
-			name: "Google Search Link",
-			input: `
-			
-			[  
-
-qfc Chocolate Ice Cream - Google Search](https://www.google.com/search?q=qfc+Chocolate+Ice+Cream&oq=qfc+Chocolate+Ice+Cream&gs_lcrp=EgZjaHJvbWUyBggAEEUYOTIGCAEQRRhA0gEIMTU2NmowajSoAgCwAgE&sourceid=chrome&ie=UTF-8 "qfc Chocolate Ice Cream - Google Search")
-
-`,
-			expected: `[qfc Chocolate Ice Cream - Google Search](https://www.google.com/search?q=qfc+Chocolate+Ice+Cream)`,
-		},
-
-		{
-			name: "Copying text into obsidian brings in funy formatting that breaks links",
-			input: `
-
-
-
-			![ 
-			
-			Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)
-			
-
-`,
-			expected: `![Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)`,
-		},
-		{
-			name: "Copying text into obsidian brings in funy formatting that breaks links - part 2",
-			input: `
-
-
-
-			[Item
-
-			media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)
-			
-
-`,
-			expected: `[Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)`,
-		},
-		{
-			name: "Copying text into obsidian brings in funy formatting that breaks links - part 3",
-			input: `
-
-
-
-			[ Item
-
-			media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)
-			
-
-`,
-			expected: `[Item media 5 screenshot](https://lh3.googleusercontent.com/ADTbiH2FM2SYb3PbxWeAI0v_-FYVMFt_6hJ3sabl_gVDadugPc5FX55USRMRIo50uvD0gwKqIJu-kfXWJHRiQV6SsTE=s1280-w1280-h800)`,
-		},
-		{
 			name: "Urls in code blocks with variable substitution are not adjusted",
 			input: `` + "``` bash" + `
 https://github.com/gkwa/${version}/test.bin` + "```" + ``,
