@@ -24,6 +24,69 @@ https://github.com/gkwa/${version}/test.bin` + "```" + ``,
 			expected: `` + "``` bash" + `
 https://github.com/gkwa/${version}/test.bin` + "```" + ``,
 		},
+		{
+			name: "URLs outside code blocks are processed, URLs inside are not",
+			input: `Check this link: https://www.google.com/search?q=test&hl=en
+` + "```" + `
+var url = "https://www.google.com/search?q=test&hl=en";
+` + "```" + `
+Another link: https://www.google.com/search?q=example&hl=en`,
+			expected: `Check this link: https://www.google.com/search?q=test
+` + "```" + `
+var url = "https://www.google.com/search?q=test&hl=en";
+` + "```" + `
+Another link: https://www.google.com/search?q=example`,
+		},
+		{
+			name: "Multiple code blocks with URLs are not processed",
+			input: `Before code block
+` + "```python" + `
+url1 = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=example"
+` + "```" + `
+Between code blocks
+` + "```javascript" + `
+const url2 = 'https://example.substack.com/p/article?utm_source=test';
+` + "```" + `
+After code block`,
+			expected: `Before code block
+` + "```python" + `
+url1 = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=example"
+` + "```" + `
+Between code blocks
+` + "```javascript" + `
+const url2 = 'https://example.substack.com/p/article?utm_source=test';
+` + "```" + `
+After code block`,
+		},
+		{
+			name: "Nested code blocks are handled correctly",
+			input: `Outer content
+` + "```markdown" + `
+# Markdown with code block
+
+Here's a code block:
+
+` + "```python" + `
+url = "https://www.google.com/search?q=nested&hl=en"
+` + "```" + `
+
+End of markdown
+` + "```" + `
+Outer URL: https://www.google.com/search?q=outer&hl=en`,
+			expected: `Outer content
+` + "```markdown" + `
+# Markdown with code block
+
+Here's a code block:
+
+` + "```python" + `
+url = "https://www.google.com/search?q=nested&hl=en"
+` + "```" + `
+
+End of markdown
+` + "```" + `
+Outer URL: https://www.google.com/search?q=outer`,
+		},
 	}
 
 	for _, tc := range testCases {
