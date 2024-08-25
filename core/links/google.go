@@ -43,6 +43,7 @@ var ParamsToRemove = []string{
 	"sourceid",
 	"spell",
 	"sqi",
+	"stick",
 	"sxsrf",
 	"uact",
 	"uds",
