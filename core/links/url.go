@@ -33,6 +33,17 @@ func isTheSweeklyURL(u *url.URL) bool {
 	return strings.HasSuffix(strings.ToLower(u.Hostname()), "thesweekly.com")
 }
 
+var theSweeklyParamsToRemove = []string{
+	"utm_source",
+	"publication_id",
+	"post_id",
+	"utm_campaign",
+	"isFreemail",
+	"r",
+	"triedRedirect",
+	"utm_medium",
+}
+
 func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 	return processURLs(r, w, func(u *url.URL) *url.URL {
 		if isYouTubeURL(u) {
@@ -57,7 +68,11 @@ func RemoveParamsFromSubstackURLs(r io.Reader, w io.Writer) error {
 func RemoveParamsFromTheSweeklyURLs(r io.Reader, w io.Writer) error {
 	return processURLs(r, w, func(u *url.URL) *url.URL {
 		if isTheSweeklyURL(u) {
-			u.RawQuery = ""
+			q := u.Query()
+			for _, param := range theSweeklyParamsToRemove {
+				q.Del(param)
+			}
+			u.RawQuery = q.Encode()
 		}
 		return u
 	})
