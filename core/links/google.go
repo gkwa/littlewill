@@ -39,6 +39,7 @@ var ParamsToRemove = []string{
 	"sca_esv",
 	"sca_upv",
 	"sclient",
+	"sei",
 	"source",
 	"sourceid",
 	"spell",
