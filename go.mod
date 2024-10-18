@@ -10,7 +10,7 @@ require (
 	github.com/go-logr/zapr v1.3.0
 	github.com/go-logr/zerologr v1.2.3
 	github.com/google/go-cmp v0.6.0
-	github.com/google/go-containerregistry v0.20.1
+	github.com/google/go-containerregistry v0.20.2
 	github.com/magefile/mage v1.15.0
 	github.com/rs/zerolog v1.33.0
 	github.com/spf13/cobra v1.8.1
