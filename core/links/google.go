@@ -22,6 +22,7 @@ var ParamsToRemove = []string{
 	"bih",
 	"biw",
 	"client",
+	"cshid",
 	"dpr",
 	"ei",
 	"fbs",
