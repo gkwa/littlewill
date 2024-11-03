@@ -42,5 +42,3 @@ jobs:
       if: runner.os == 'Linux'
       shell: script -q -e -c "bash {0}"
       run: go run main.go -- main.go
-
-
