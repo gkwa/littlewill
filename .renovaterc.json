@@ -5,7 +5,7 @@
   "prConcurrentLimit": 0,
   "packageRules": [
     {
-      "matchUpdateTypes": ["minor", "patch", "pin", "digest", "replacement"],
+      "matchUpdateTypes": ["major", "minor", "patch", "pin", "digest", "replacement"],
       "automerge": true,
       "automergeStrategy": "merge-commit",
       "recreateWhen": "always"
