@@ -13,11 +13,13 @@ littlewill input.md > output.md
 ## Install littlewill
 
 On macOS/Linux:
+
 ```bash
 brew install gkwa/homebrew-tools/littlewill
 ```
 
 On Windows:
+
 ```powershell
 TBD
 ```
