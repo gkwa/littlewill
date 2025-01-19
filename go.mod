@@ -1,6 +1,8 @@
 module github.com/gkwa/littlewill
 
-go 1.22.4
+go 1.23.0
+
+toolchain go1.23.5
 
 require (
 	github.com/fatih/color v1.18.0
@@ -17,7 +19,7 @@ require (
 	github.com/spf13/viper v1.19.0
 	go.uber.org/zap v1.27.0
 	mvdan.cc/xurls/v2 v2.6.0
-	sigs.k8s.io/controller-runtime v0.19.4
+	sigs.k8s.io/controller-runtime v0.20.0
 )
 
 require (
