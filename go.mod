@@ -6,7 +6,7 @@ toolchain go1.24.2
 
 require (
 	github.com/fatih/color v1.18.0
-	github.com/fsnotify/fsnotify v1.8.0
+	github.com/fsnotify/fsnotify v1.9.0
 	github.com/go-git/go-git/v5 v5.14.0
 	github.com/go-logr/logr v1.4.2
 	github.com/go-logr/zapr v1.3.0
