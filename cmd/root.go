@@ -6,12 +6,11 @@ import (
 	"io"
 	"os"
 
+	"github.com/gkwa/littlewill/core/links"
+	"github.com/gkwa/littlewill/internal/logger"
 	"github.com/go-logr/logr"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-
-	"github.com/gkwa/littlewill/core/links"
-	"github.com/gkwa/littlewill/internal/logger"
 )
 
 var (
@@ -22,6 +21,7 @@ var (
 )
 
 var linkTransforms = []func(io.Reader, io.Writer) error{
+	links.RemoveGenericTrackingParams,
 	links.RemoveParamsFromGoogleURLs,
 	links.RemoveParamsFromYouTubeURLs,
 	links.RemoveParamsFromSubstackURLs,
