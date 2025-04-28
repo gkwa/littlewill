@@ -11,21 +11,22 @@ import (
 
 // Common tracking parameters that should be removed from URLs
 var GenericParamsToRemove = []string{
-	"utm_source",
-	"utm_medium",
-	"utm_campaign",
-	"utm_content",
-	"utm_term",
-	"utm_id",
-	"source",
-	"medium",
 	"campaign",
 	"fbclid",
 	"gclid",
-	"ocid",
-	"ncid",
 	"mc_cid",
 	"mc_eid",
+	"medium",
+	"ncid",
+	"ocid",
+	"source",
+	"srsltid",
+	"utm_campaign",
+	"utm_content",
+	"utm_id",
+	"utm_medium",
+	"utm_source",
+	"utm_term",
 }
 
 // RemoveGenericTrackingParams removes common tracking parameters from all URLs
