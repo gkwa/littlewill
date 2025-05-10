@@ -19,6 +19,7 @@ var KeepParams = []string{
 }
 
 var ParamsToRemove = []string{
+	"_gl",
 	"bih",
 	"biw",
 	"client",
