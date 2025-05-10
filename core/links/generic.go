@@ -11,6 +11,7 @@ import (
 
 // Common tracking parameters that should be removed from URLs
 var GenericParamsToRemove = []string{
+	"_gl",
 	"campaign",
 	"fbclid",
 	"gclid",
