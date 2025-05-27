@@ -11,7 +11,8 @@ import (
 
 // Common tracking parameters that should be removed from URLs
 var GenericParamsToRemove = []string{
-	"_ga_ECJJ2Q2SJQ", // Google Analytics 4 session tracking parameter
+	"_bhlid",
+	"_ga_ECJJ2Q2SJQ",
 	"_ga",
 	"_gl",
 	"campaign",
