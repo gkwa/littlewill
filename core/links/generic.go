@@ -26,6 +26,7 @@ var GenericParamsToRemove = []string{
 	"medium",
 	"ncid",
 	"ocid",
+	"sh_kit",
 	"source",
 	"srsltid",
 	"utm_account",
