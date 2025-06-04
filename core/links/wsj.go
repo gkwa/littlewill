@@ -12,6 +12,7 @@ import (
 // WSJ parameters that should be removed
 var wsjParamsToRemove = []string{
 	"reflink",
+	"ref",
 	"st",
 }
 
