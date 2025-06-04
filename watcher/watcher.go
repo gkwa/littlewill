@@ -37,6 +37,7 @@ func RunWatcher(
 		err := core.ProcessFile(logger, path, linkTransforms...)
 		if err != nil {
 			logger.Error(err, "Failed to process file", "path", path)
+			// Don't exit on file processing errors, just continue watching
 		}
 	}
 	err := Run(ctx, dirToWatch, patterns, filterType, handler)
@@ -64,12 +65,12 @@ func Run(
 	}
 	defer watcher.Close()
 
-	done := make(chan bool)
 	go func() {
 		for {
 			select {
 			case event, ok := <-watcher.Events:
 				if !ok {
+					logger.Info("Watcher events channel closed")
 					return
 				}
 				if shouldTrigger(event, filters) && !isIgnoredEvent(event.Op) {
@@ -78,15 +79,26 @@ func Run(
 						logger.Error(err, "Error getting absolute path", "file", event.Name)
 						continue
 					}
-					handler(event, absPath)
+					// Handle the event in a separate goroutine to prevent blocking
+					go func(evt fsnotify.Event, path string) {
+						defer func() {
+							if r := recover(); r != nil {
+								logger.Error(fmt.Errorf("panic in event handler: %v", r), "Recovered from panic", "file", path)
+							}
+						}()
+						handler(evt, path)
+					}(event, absPath)
 					logger.V(1).Info("File event", "event", event.Op.String(), "file", absPath)
 				}
 			case err, ok := <-watcher.Errors:
 				if !ok {
+					logger.Info("Watcher errors channel closed")
 					return
 				}
 				logger.Error(err, "Error from watcher")
+				// Continue watching even if there are watcher errors
 			case <-ctx.Done():
+				logger.Info("Context cancelled, stopping watcher")
 				return
 			}
 		}
@@ -97,7 +109,11 @@ func Run(
 		return fmt.Errorf("error adding directory to watcher: %w", err)
 	}
 
-	<-done
+	logger.Info("Watcher started successfully", "directory", dirPath)
+
+	// Block until context is cancelled
+	<-ctx.Done()
+	logger.Info("Watcher stopping")
 	return nil
 }
 
