@@ -38,6 +38,7 @@ var GenericParamsToRemove = []string{
 	"utm_content",
 	"utm_id",
 	"utm_medium",
+	"utm_name",
 	"utm_offer",
 	"utm_source",
 	"utm_term",
