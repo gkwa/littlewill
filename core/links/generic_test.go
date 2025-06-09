@@ -20,6 +20,16 @@ func TestRemoveGenericTrackingParams(t *testing.T) {
 			expected: "https://research.swtch.com/diffcover",
 		},
 		{
+			name:     "URL with various UTM parameters",
+			input:    "https://example.com/article?utm_source=newsletter&utm_medium=email&utm_campaign=summer&utm_content=button&utm_term=test&utm_id=123",
+			expected: "https://example.com/article",
+		},
+		{
+			name:     "URL with custom UTM parameters",
+			input:    "https://example.com/page?utm_custom_param=value&utm_another_one=test&regular=keep",
+			expected: "https://example.com/page?regular=keep",
+		},
+		{
 			name:     "URL with mixed parameters",
 			input:    "https://example.com/article?id=123&utm_source=newsletter&page=2",
 			expected: "https://example.com/article?id=123&page=2",
@@ -38,6 +48,11 @@ func TestRemoveGenericTrackingParams(t *testing.T) {
 			name:     "URL with Facebook click ID",
 			input:    "https://example.com/product?id=456&fbclid=abc123",
 			expected: "https://example.com/product?id=456",
+		},
+		{
+			name:     "URL with Google Analytics parameters",
+			input:    "https://example.com/page?_ga=abc123&_gl=def456&id=789",
+			expected: "https://example.com/page?id=789",
 		},
 		{
 			name: "Multiple URLs in text",
@@ -78,6 +93,74 @@ Another URL: https://example.com/article?id=123`,
 			result := output.String()
 			if diff := cmp.Diff(tc.expected, result); diff != "" {
 				t.Errorf("Unexpected result (-want +got):\n%s", diff)
+			}
+		})
+	}
+}
+
+func TestIsUTMParam(t *testing.T) {
+	testCases := []struct {
+		param    string
+		expected bool
+	}{
+		{"utm_source", true},
+		{"utm_medium", true},
+		{"utm_campaign", true},
+		{"utm_content", true},
+		{"utm_term", true},
+		{"utm_id", true},
+		{"utm_custom_param", true},
+		{"utm_whatever", true},
+		{"utm_", true},
+		{"source", false},
+		{"medium", false},
+		{"campaign", false},
+		{"fbclid", false},
+		{"gclid", false},
+		{"utm", false},
+		{"_utm_source", false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.param, func(t *testing.T) {
+			result := isUTMParam(tc.param)
+			if result != tc.expected {
+				t.Errorf("isUTMParam(%q) = %v, want %v", tc.param, result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestShouldRemoveParam(t *testing.T) {
+	testCases := []struct {
+		param    string
+		expected bool
+	}{
+		// UTM parameters
+		{"utm_source", true},
+		{"utm_medium", true},
+		{"utm_campaign", true},
+		{"utm_custom", true},
+		// Non-UTM tracking parameters
+		{"fbclid", true},
+		{"gclid", true},
+		{"_ga", true},
+		{"source", true},
+		{"medium", true},
+		{"campaign", true},
+		// Regular parameters that should be kept
+		{"id", false},
+		{"page", false},
+		{"category", false},
+		{"q", false},
+		{"search", false},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.param, func(t *testing.T) {
+			result := shouldRemoveParam(tc.param)
+			if result != tc.expected {
+				t.Errorf("shouldRemoveParam(%q) = %v, want %v", tc.param, result, tc.expected)
 			}
 		})
 	}

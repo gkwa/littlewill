@@ -4,13 +4,17 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"regexp"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
 )
 
-// Common tracking parameters that should be removed from URLs
-var GenericParamsToRemove = []string{
+// Regex pattern for UTM parameters
+var utmParamRegex = regexp.MustCompile(`^utm_`)
+
+// Non-UTM tracking parameters that should be removed
+var NonUTMParamsToRemove = []string{
 	"_bhlid",
 	"_ga_ECJJ2Q2SJQ",
 	"_ga",
@@ -31,18 +35,25 @@ var GenericParamsToRemove = []string{
 	"sh_kit",
 	"source",
 	"srsltid",
-	"utm_account",
-	"utm_ad",
-	"utm_adgroup",
-	"utm_campaign",
-	"utm_campaignname",
-	"utm_content",
-	"utm_id",
-	"utm_medium",
-	"utm_name",
-	"utm_offer",
-	"utm_source",
-	"utm_term",
+}
+
+// isUTMParam checks if a parameter name matches the UTM pattern
+func isUTMParam(param string) bool {
+	return utmParamRegex.MatchString(param)
+}
+
+// shouldRemoveParam checks if a parameter should be removed (either UTM or in the static list)
+func shouldRemoveParam(param string) bool {
+	if isUTMParam(param) {
+		return true
+	}
+
+	for _, p := range NonUTMParamsToRemove {
+		if p == param {
+			return true
+		}
+	}
+	return false
 }
 
 // RemoveGenericTrackingParams removes common tracking parameters from all URLs
@@ -75,8 +86,9 @@ func RemoveGenericTrackingParams(r io.Reader, w io.Writer) error {
 				q := u.Query()
 				changed := false
 
-				for _, param := range GenericParamsToRemove {
-					if q.Has(param) {
+				// Check all parameters and remove those that match our criteria
+				for param := range q {
+					if shouldRemoveParam(param) {
 						q.Del(param)
 						changed = true
 					}
