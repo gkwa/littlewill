@@ -24,6 +24,7 @@ var GenericParamsToRemove = []string{
 	"mc_cid",
 	"mc_eid",
 	"medium",
+	"mkt_tok",
 	"ncid",
 	"ocid",
 	"scid",
