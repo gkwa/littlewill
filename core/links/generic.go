@@ -31,6 +31,7 @@ var NonUTMParamsToRemove = []string{
 	"mkt_tok",
 	"ncid",
 	"ocid",
+	"ref",
 	"scid",
 	"sh_kit",
 	"source",
