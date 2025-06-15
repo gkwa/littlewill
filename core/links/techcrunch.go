@@ -9,20 +9,32 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
-// TechCrunch email parameters that should be removed
-var techcrunchParamsToRemove = []string{
+// TechCrunch-specific tracking parameters that should be removed (UTM parameters are handled by shared logic)
+var TechCrunchSpecificTrackingParams = []string{
 	"ecid",
-	"utm_campaign",
-	"utm_medium",
 	"_hsenc",
 	"_hsmi",
-	"utm_content",
-	"utm_source",
 }
 
 // isTechCrunchURL checks if a URL is from TechCrunch's email domain
 func isTechCrunchURL(u *url.URL) bool {
 	return strings.Contains(strings.ToLower(u.Hostname()), "techcrunch.com")
+}
+
+// isTechCrunchTrackingParam checks if a parameter should be removed from TechCrunch URLs
+func isTechCrunchTrackingParam(param string) bool {
+	// Reuse shared UTM logic
+	if isUTMParam(param) {
+		return true
+	}
+
+	// Check TechCrunch-specific parameters
+	for _, p := range TechCrunchSpecificTrackingParams {
+		if p == param {
+			return true
+		}
+	}
+	return false
 }
 
 // RemoveParamsFromTechCrunchURLs removes tracking parameters from TechCrunch email URLs
@@ -56,8 +68,9 @@ func RemoveParamsFromTechCrunchURLs(r io.Reader, w io.Writer) error {
 					q := u.Query()
 					changed := false
 
-					for _, param := range techcrunchParamsToRemove {
-						if q.Has(param) {
+					// Use shared logic for parameter removal
+					for param := range q {
+						if isTechCrunchTrackingParam(param) {
 							q.Del(param)
 							changed = true
 						}

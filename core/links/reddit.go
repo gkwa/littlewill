@@ -9,25 +9,29 @@ import (
 	"mvdan.cc/xurls/v2"
 )
 
-// LinkedIn-specific tracking parameters that should be removed (UTM parameters are handled by shared logic)
-var LinkedInSpecificTrackingParams = []string{
-	"rcm",
+// Reddit-specific tracking parameters that should be removed (UTM parameters are handled by shared logic)
+var RedditSpecificTrackingParams = []string{
+	"share_id",
 }
 
-// isLinkedInURL checks if a URL is from LinkedIn
-func isLinkedInURL(u *url.URL) bool {
-	return strings.Contains(strings.ToLower(u.Hostname()), "linkedin.com")
+// isRedditURL checks if a URL is from Reddit
+func isRedditURL(u *url.URL) bool {
+	hostname := strings.ToLower(u.Hostname())
+	return hostname == "reddit.com" ||
+		strings.HasSuffix(hostname, ".reddit.com") ||
+		hostname == "redd.it" ||
+		strings.HasSuffix(hostname, ".redd.it")
 }
 
-// isLinkedInTrackingParam checks if a parameter should be removed from LinkedIn URLs
-func isLinkedInTrackingParam(param string) bool {
+// isRedditTrackingParam checks if a parameter should be removed from Reddit URLs
+func isRedditTrackingParam(param string) bool {
 	// Reuse shared UTM logic
 	if isUTMParam(param) {
 		return true
 	}
 
-	// Check LinkedIn-specific parameters
-	for _, p := range LinkedInSpecificTrackingParams {
+	// Check Reddit-specific parameters
+	for _, p := range RedditSpecificTrackingParams {
 		if p == param {
 			return true
 		}
@@ -35,11 +39,12 @@ func isLinkedInTrackingParam(param string) bool {
 	return false
 }
 
-// RemoveParamsFromLinkedInURLs removes tracking parameters from LinkedIn URLs
-func RemoveParamsFromLinkedInURLs(r io.Reader, w io.Writer) error {
+// RemoveParamsFromRedditURLs removes tracking parameters from Reddit URLs
+// Uses shared UTM detection logic plus Reddit-specific parameters
+func RemoveParamsFromRedditURLs(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
 	if err != nil {
-		return fmt.Errorf("RemoveParamsFromLinkedInURLs: failed to read input: %w", err)
+		return fmt.Errorf("RemoveParamsFromRedditURLs: failed to read input: %w", err)
 	}
 
 	codeBlockLevel := 0
@@ -62,13 +67,13 @@ func RemoveParamsFromLinkedInURLs(r io.Reader, w io.Writer) error {
 					return match
 				}
 
-				if isLinkedInURL(u) {
+				if isRedditURL(u) {
 					q := u.Query()
 					changed := false
 
 					// Use shared logic for parameter removal
 					for param := range q {
-						if isLinkedInTrackingParam(param) {
+						if isRedditTrackingParam(param) {
 							q.Del(param)
 							changed = true
 						}
@@ -87,7 +92,7 @@ func RemoveParamsFromLinkedInURLs(r io.Reader, w io.Writer) error {
 
 	_, err = w.Write([]byte(strings.Join(lines, "\n")))
 	if err != nil {
-		return fmt.Errorf("RemoveParamsFromLinkedInURLs: failed to write output: %w", err)
+		return fmt.Errorf("RemoveParamsFromRedditURLs: failed to write output: %w", err)
 	}
 
 	return nil

@@ -131,7 +131,7 @@ func TestIsUTMParam(t *testing.T) {
 	}
 }
 
-func TestShouldRemoveParam(t *testing.T) {
+func TestIsTrackingParam(t *testing.T) {
 	testCases := []struct {
 		param    string
 		expected bool
@@ -141,7 +141,7 @@ func TestShouldRemoveParam(t *testing.T) {
 		{"utm_medium", true},
 		{"utm_campaign", true},
 		{"utm_custom", true},
-		// Non-UTM tracking parameters
+		// Common tracking parameters
 		{"fbclid", true},
 		{"gclid", true},
 		{"_ga", true},
@@ -158,9 +158,9 @@ func TestShouldRemoveParam(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.param, func(t *testing.T) {
-			result := shouldRemoveParam(tc.param)
+			result := isTrackingParam(tc.param)
 			if result != tc.expected {
-				t.Errorf("shouldRemoveParam(%q) = %v, want %v", tc.param, result, tc.expected)
+				t.Errorf("isTrackingParam(%q) = %v, want %v", tc.param, result, tc.expected)
 			}
 		})
 	}
