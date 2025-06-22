@@ -6,6 +6,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/fsnotify/fsnotify"
@@ -20,6 +21,48 @@ var ignoredEvents = []fsnotify.Op{
 }
 
 type EventHandler func(event fsnotify.Event, path string)
+
+func isBrokenSymlink(path string) bool {
+	// Lstat gets info about the symlink itself (doesn't follow it)
+	linkInfo, err := os.Lstat(path)
+	if err != nil || linkInfo.Mode()&os.ModeSymlink == 0 {
+		return false // Not a symlink or can't read it
+	}
+
+	// Stat follows the symlink to the target
+	_, err = os.Stat(path)
+	return err != nil // If Stat fails, the target doesn't exist
+}
+
+func cleanupBrokenSymlinks(dir string) error {
+	return filepath.Walk(dir, func(path string, info os.FileInfo, err error) error {
+		if err != nil {
+			return nil // Skip files we can't read
+		}
+
+		if isBrokenSymlink(path) {
+			fmt.Printf("Removing broken symlink: %s\n", path)
+			return os.Remove(path)
+		}
+		return nil
+	})
+}
+
+func addWatchWithCleanup(w *fsnotify.Watcher, dirPath string) error {
+	err := w.Add(dirPath)
+	if err != nil && strings.Contains(err.Error(), "no such file or directory") {
+		// Extract the problematic file path from the error message
+		if strings.Contains(err.Error(), ".#") {
+			fmt.Printf("Broken symlink detected, cleaning up and retrying...\n")
+			cleanupBrokenSymlinks(dirPath)
+
+			// Retry after cleanup
+			time.Sleep(1000 * time.Millisecond)
+			return w.Add(dirPath)
+		}
+	}
+	return err
+}
 
 func RunWatcher(
 	ctx context.Context,
@@ -104,7 +147,7 @@ func Run(
 		}
 	}()
 
-	err = watcher.Add(dirPath)
+	err = addWatchWithCleanup(watcher, dirPath)
 	if err != nil {
 		return fmt.Errorf("error adding directory to watcher: %w", err)
 	}
