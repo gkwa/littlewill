@@ -90,6 +90,16 @@ Check out this article: https://first.substack.com/p/title
 And this one: https://second.substack.com/p/another-title
 `,
 		},
+		{
+			name:     "Substack main domain with r parameter",
+			input:    "https://substack.com/@pvonz/note/c-119126558?r=21036",
+			expected: "https://substack.com/@pvonz/note/c-119126558",
+		},
+		{
+			name:     "Substack main domain with alphasignalai",
+			input:    "https://substack.com/@alphasignalai/note/c-120940100?r=21036",
+			expected: "https://substack.com/@alphasignalai/note/c-120940100",
+		},
 	}
 
 	for _, tc := range testCases {

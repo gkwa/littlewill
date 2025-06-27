@@ -26,7 +26,8 @@ func isYouTubeURL(u *url.URL) bool {
 }
 
 func isSubstackURL(u *url.URL) bool {
-	return strings.HasSuffix(strings.ToLower(u.Hostname()), ".substack.com")
+	hostname := strings.ToLower(u.Hostname())
+	return hostname == "substack.com" || strings.HasSuffix(hostname, ".substack.com")
 }
 
 func isTheSweeklyURL(u *url.URL) bool {

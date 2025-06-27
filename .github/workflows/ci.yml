@@ -20,7 +20,7 @@ jobs:
     name: Build & Test
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4
-      - uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34 # v5
+      - uses: actions/setup-go@d35c59abb061a4a6fb18e82ac0862c26744d6ab5 # v5
         with:
           go-version: stable
       - name: Set GOVERSION environment variable (Linux/macOS)
@@ -35,7 +35,7 @@ jobs:
           go test ./...
       - name: Run GoReleaser
         if: runner.os == 'Linux'
-        uses: goreleaser/goreleaser-action@90a3faa9d0182683851fbfa97ca1a2cb983bfca3 # v6
+        uses: goreleaser/goreleaser-action@9c156ee8a17a598857849441385a2041ef570552 # v6
         with:
           args: release --snapshot --skip=publish --clean
       - name: Colored Output Test

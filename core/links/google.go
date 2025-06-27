@@ -19,10 +19,12 @@ var KeepParams = []string{
 }
 
 var ParamsToRemove = []string{
+	"aep",
 	"bih",
 	"biw",
 	"client",
 	"cshid",
+	"csuir",
 	"dpr",
 	"ei",
 	"fbs",
@@ -33,6 +35,8 @@ var ParamsToRemove = []string{
 	"hl",
 	"ictx",
 	"ie",
+	"mstk",
+	"ntc",
 	"num",
 	"oq",
 	"prmd",
@@ -41,6 +45,7 @@ var ParamsToRemove = []string{
 	"sca_upv",
 	"sclient",
 	"sei",
+	"si",
 	"source",
 	"sourceid",
 	"spell",
