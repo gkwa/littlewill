@@ -12,6 +12,8 @@ import (
 // Reddit-specific tracking parameters that should be removed (UTM parameters are handled by shared logic)
 var RedditSpecificTrackingParams = []string{
 	"share_id",
+	"cId",
+	"iId",
 }
 
 // isRedditURL checks if a URL is from Reddit
@@ -36,6 +38,7 @@ func isRedditTrackingParam(param string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -49,6 +52,7 @@ func RemoveParamsFromRedditURLs(r io.Reader, w io.Writer) error {
 
 	codeBlockLevel := 0
 	lines := strings.Split(string(buf), "\n")
+
 	for i, line := range lines {
 		trimmedLine := strings.TrimSpace(line)
 		if strings.HasPrefix(trimmedLine, "```") {
