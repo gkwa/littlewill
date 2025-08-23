@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -32,12 +33,7 @@ func isShopifyTrackingParam(param string) bool {
 		return true
 	}
 	// Check Shopify-specific parameters
-	for _, p := range ShopifyTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(ShopifyTrackingParams, param)
 }
 
 // RemoveParamsFromShopifyURLs removes tracking parameters from Shopify URLs
