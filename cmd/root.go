@@ -30,6 +30,7 @@ var linkTransforms = []func(io.Reader, io.Writer) error{
 	links.RemoveParamsFromLinkedInURLs,
 	links.RemoveParamsFromWSJURLs,
 	links.RemoveParamsFromRedditURLs,
+	links.RemoveParamsFromShopifyURLs,
 	links.RemoveConditionalParams,
 	links.RemoveTextFragmentsFromURLs,
 	links.RemoveYouTubeCountFromMarkdownLinks,
@@ -46,7 +47,6 @@ var rootCmd = &cobra.Command{
 		if cliLogger.IsZero() {
 			cliLogger = logger.NewConsoleLogger(verbose, logFormat == "json")
 		}
-
 		ctx := logr.NewContext(context.Background(), cliLogger)
 		cmd.SetContext(ctx)
 	},
@@ -70,6 +70,7 @@ func init() {
 		fmt.Printf("Error binding verbose flag: %v\n", err)
 		os.Exit(1)
 	}
+
 	if err := viper.BindPFlag("log-format", rootCmd.PersistentFlags().Lookup("log-format")); err != nil {
 		fmt.Printf("Error binding log-format flag: %v\n", err)
 		os.Exit(1)
