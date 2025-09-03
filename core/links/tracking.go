@@ -12,8 +12,8 @@ import (
 // Common tracking parameters that should be removed from all URLs
 var CommonTrackingParams = []string{
 	"_bhlid",
-	"_ga_ECJJ2Q2SJQ",
 	"_ga",
+	"_ga_ECJJ2Q2SJQ",
 	"_gl",
 	"campaign",
 	"ck_subscriber_id",
