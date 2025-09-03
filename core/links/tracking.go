@@ -16,6 +16,7 @@ var CommonTrackingParams = []string{
 	"_ga_ECJJ2Q2SJQ",
 	"_gl",
 	"campaign",
+	"cid",
 	"ck_subscriber_id",
 	"fbclid",
 	"gad_campaignid",
@@ -32,6 +33,7 @@ var CommonTrackingParams = []string{
 	"scid",
 	"sh_kit",
 	"share_id",
+	"skip_click_tracking",
 	"source",
 	"srsltid",
 }
