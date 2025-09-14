@@ -12,19 +12,6 @@ import (
 
 var textFragmentRegex = regexp.MustCompile(`(?i)^:~:text=`)
 
-func isYouTubeURL(u *url.URL) bool {
-	youTubeDomains := []string{
-		"youtube.com",
-		"youtu.be",
-	}
-	for _, domain := range youTubeDomains {
-		if strings.Contains(strings.ToLower(u.Hostname()), domain) {
-			return true
-		}
-	}
-	return false
-}
-
 func isSubstackURL(u *url.URL) bool {
 	hostname := strings.ToLower(u.Hostname())
 	return hostname == "substack.com" || strings.HasSuffix(hostname, ".substack.com")
@@ -43,18 +30,6 @@ var theSweeklyParamsToRemove = []string{
 	"r",
 	"triedRedirect",
 	"utm_medium",
-}
-
-func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
-	return processURLs(r, w, func(u *url.URL) *url.URL {
-		if isYouTubeURL(u) {
-			q := u.Query()
-			q.Del("si")
-			q.Del("app")
-			u.RawQuery = q.Encode()
-		}
-		return u
-	})
 }
 
 func RemoveParamsFromSubstackURLs(r io.Reader, w io.Writer) error {
