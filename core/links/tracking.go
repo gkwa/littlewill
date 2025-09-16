@@ -23,6 +23,9 @@ var CommonTrackingParams = []string{
 	"gad_source",
 	"gbraid",
 	"gclid",
+	"growAuthSource",
+	"growSource",
+	"growUnverifiedReaderId",
 	"mc_cid",
 	"mc_eid",
 	"medium",
@@ -52,6 +55,27 @@ func isTrackingParam(param string) bool {
 	return false
 }
 
+// parseFragmentParams parses fragment content that contains URL-style parameters
+func parseFragmentParams(fragment string) (url.Values, error) {
+	// If fragment looks like it contains parameters (has = and &), parse it
+	if strings.Contains(fragment, "=") {
+		values, err := url.ParseQuery(fragment)
+		if err != nil {
+			return nil, err
+		}
+		return values, nil
+	}
+	return nil, nil
+}
+
+// buildFragmentFromParams rebuilds fragment from cleaned parameters
+func buildFragmentFromParams(values url.Values) string {
+	if len(values) == 0 {
+		return ""
+	}
+	return values.Encode()
+}
+
 // RemoveGenericTrackingParams removes common tracking parameters from all URLs
 func RemoveGenericTrackingParams(r io.Reader, w io.Writer) error {
 	buf, err := io.ReadAll(r)
@@ -79,10 +103,10 @@ func RemoveGenericTrackingParams(r io.Reader, w io.Writer) error {
 					return match
 				}
 
-				q := u.Query()
-				changed := false
 
 				// Check all parameters and remove those that are tracking parameters
+				q := u.Query()
+				changed := false
 				for param := range q {
 					if isTrackingParam(param) {
 						q.Del(param)
@@ -92,6 +116,27 @@ func RemoveGenericTrackingParams(r io.Reader, w io.Writer) error {
 
 				if changed {
 					u.RawQuery = q.Encode()
+				}
+
+				// Handle fragment parameters
+				if u.Fragment != "" {
+					fragmentParams, err := parseFragmentParams(u.Fragment)
+					if err == nil && fragmentParams != nil {
+						fragmentChanged := false
+						for param := range fragmentParams {
+							if isTrackingParam(param) {
+								fragmentParams.Del(param)
+								fragmentChanged = true
+							}
+						}
+						if fragmentChanged {
+							u.Fragment = buildFragmentFromParams(fragmentParams)
+							changed = true
+						}
+					}
+				}
+
+				if changed {
 					return u.String()
 				}
 

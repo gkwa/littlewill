@@ -55,13 +55,35 @@ func TestRemoveGenericTrackingParams(t *testing.T) {
 			expected: "https://example.com/page?id=789",
 		},
 		{
+			name:     "URL with fragment tracking parameters",
+			input:    "https://musclemommasourdough.com/roasted-garlic-and-parmesan-sourdough-loaf/#growUnverifiedReaderId=4e75e57c-2848-4936-aa15-0e45cc7a0652&growAuthSource=espLink&growSource=espLink",
+			expected: "https://musclemommasourdough.com/roasted-garlic-and-parmesan-sourdough-loaf/",
+		},
+		{
+			name:     "URL with fragment tracking and regular fragment",
+			input:    "https://example.com/page#section1&growAuthSource=espLink&utm_source=newsletter",
+			expected: "https://example.com/page#section1",
+		},
+		{
+			name:     "URL with mixed fragment parameters",
+			input:    "https://example.com/page#keep=this&growAuthSource=espLink&other=also_keep&utm_source=newsletter",
+			expected: "https://example.com/page#keep=this&other=also_keep",
+		},
+		{
+			name:     "URL with regular fragment (no parameters)",
+			input:    "https://example.com/page#heading-1",
+			expected: "https://example.com/page#heading-1",
+		},
+		{
 			name: "Multiple URLs in text",
 			input: `Check out these links:
 https://research.swtch.com/diffcover?utm_source=christophberger&utm_medium=email&utm_campaign=2025-04-27-the-attack-you-invited
-https://example.com/article?id=123&utm_source=newsletter&page=2`,
+https://example.com/article?id=123&utm_source=newsletter&page=2
+https://musclemommasourdough.com/recipe/#growUnverifiedReaderId=123&growAuthSource=espLink`,
 			expected: `Check out these links:
 https://research.swtch.com/diffcover
-https://example.com/article?id=123&page=2`,
+https://example.com/article?id=123&page=2
+https://musclemommasourdough.com/recipe/`,
 		},
 		{
 			name: "URLs inside code blocks should not be processed",
@@ -69,16 +91,20 @@ https://example.com/article?id=123&page=2`,
 
 ` + "```" + `
 var url = "https://research.swtch.com/diffcover?utm_source=christophberger&utm_medium=email";
+var fragmentUrl = "https://example.com/page#growAuthSource=espLink";
 ` + "```" + `
 
-Another URL: https://example.com/article?id=123&utm_source=newsletter`,
+Another URL: https://example.com/article?id=123&utm_source=newsletter
+Fragment URL: https://musclemommasourdough.com/recipe/#growUnverifiedReaderId=123`,
 			expected: `Check this URL: https://research.swtch.com/diffcover
 
 ` + "```" + `
 var url = "https://research.swtch.com/diffcover?utm_source=christophberger&utm_medium=email";
+var fragmentUrl = "https://example.com/page#growAuthSource=espLink";
 ` + "```" + `
 
-Another URL: https://example.com/article?id=123`,
+Another URL: https://example.com/article?id=123
+Fragment URL: https://musclemommasourdough.com/recipe/`,
 		},
 	}
 
@@ -148,6 +174,10 @@ func TestIsTrackingParam(t *testing.T) {
 		{"source", true},
 		{"medium", true},
 		{"campaign", true},
+		// Fragment tracking parameters
+		{"growUnverifiedReaderId", true},
+		{"growAuthSource", true},
+		{"growSource", true},
 		// Regular parameters that should be kept
 		{"id", false},
 		{"page", false},
@@ -161,6 +191,74 @@ func TestIsTrackingParam(t *testing.T) {
 			result := isTrackingParam(tc.param)
 			if result != tc.expected {
 				t.Errorf("isTrackingParam(%q) = %v, want %v", tc.param, result, tc.expected)
+			}
+		})
+	}
+}
+
+func TestParseFragmentParams(t *testing.T) {
+	testCases := []struct {
+		name     string
+		fragment string
+		expected map[string][]string
+		hasError bool
+	}{
+		{
+			name:     "Fragment with parameters",
+			fragment: "growUnverifiedReaderId=123&growAuthSource=espLink&growSource=espLink",
+			expected: map[string][]string{
+				"growUnverifiedReaderId": {"123"},
+				"growAuthSource":         {"espLink"},
+				"growSource":             {"espLink"},
+			},
+			hasError: false,
+		},
+		{
+			name:     "Fragment without parameters",
+			fragment: "heading-1",
+			expected: nil,
+			hasError: false,
+		},
+		{
+			name:     "Empty fragment",
+			fragment: "",
+			expected: nil,
+			hasError: false,
+		},
+		{
+			name:     "Fragment with mixed content",
+			fragment: "section1&param=value&other=test",
+			expected: map[string][]string{
+				"section1": {""},
+				"param":    {"value"},
+				"other":    {"test"},
+			},
+			hasError: false,
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			result, err := parseFragmentParams(tc.fragment)
+			if tc.hasError && err == nil {
+				t.Errorf("Expected error but got none")
+			}
+			if !tc.hasError && err != nil {
+				t.Errorf("Unexpected error: %v", err)
+			}
+			if tc.expected == nil && result != nil {
+				t.Errorf("Expected nil result but got: %v", result)
+			}
+			if tc.expected != nil && result == nil {
+				t.Errorf("Expected result but got nil")
+			}
+			if tc.expected != nil && result != nil {
+				for key, expectedValues := range tc.expected {
+					actualValues := result[key]
+					if diff := cmp.Diff(expectedValues, actualValues); diff != "" {
+						t.Errorf("Unexpected values for key %q (-want +got):\n%s", key, diff)
+					}
+				}
 			}
 		})
 	}
