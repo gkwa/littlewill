@@ -3,10 +3,8 @@ package cmd
 import (
 	"context"
 	"fmt"
-	"io"
 	"os"
 
-	"github.com/gkwa/littlewill/core/links"
 	"github.com/gkwa/littlewill/internal/logger"
 	"github.com/go-logr/logr"
 	"github.com/spf13/cobra"
@@ -19,22 +17,6 @@ var (
 	logFormat string
 	cliLogger logr.Logger
 )
-
-var linkTransforms = []func(io.Reader, io.Writer) error{
-	links.RemoveGenericTrackingParams,
-	links.RemoveParamsFromGoogleURLs,
-	links.RemoveParamsFromYouTubeURLs,
-	links.RemoveParamsFromSubstackURLs,
-	links.RemoveParamsFromTheSweeklyURLs,
-	links.RemoveParamsFromTechCrunchURLs,
-	links.RemoveParamsFromLinkedInURLs,
-	links.RemoveParamsFromWSJURLs,
-	links.RemoveParamsFromRedditURLs,
-	links.RemoveParamsFromShopifyURLs,
-	links.RemoveConditionalParams,
-	links.RemoveTextFragmentsFromURLs,
-	links.RemoveYouTubeCountFromMarkdownLinks,
-}
 
 var rootCmd = &cobra.Command{
 	Use:   "littlewill",
@@ -66,6 +48,9 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "enable verbose mode")
 	rootCmd.PersistentFlags().StringVar(&logFormat, "log-format", "", "json or text (default is text)")
 
+	// Setup transform flags automatically
+	setupTransformFlags(rootCmd)
+
 	if err := viper.BindPFlag("verbose", rootCmd.PersistentFlags().Lookup("verbose")); err != nil {
 		fmt.Printf("Error binding verbose flag: %v\n", err)
 		os.Exit(1)
@@ -90,6 +75,9 @@ func initConfig() {
 	}
 
 	viper.AutomaticEnv()
+
+	// Set default values for all transforms automatically
+	setTransformDefaults()
 
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())

@@ -26,12 +26,13 @@ Examples:
   littlewill watch-dir /path/to/directory --patterns "doc_*.md" --patterns "report_*.txt"`,
 	Run: func(cmd *cobra.Command, args []string) {
 		dir := args[0]
+		transforms := buildLinkTransforms()
 		watcher.RunWatcher(
 			cmd.Context(),
 			dir,
 			patterns,
 			filterType,
-			linkTransforms,
+			transforms,
 		)
 	},
 }
