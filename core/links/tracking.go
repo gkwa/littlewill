@@ -103,7 +103,6 @@ func RemoveGenericTrackingParams(r io.Reader, w io.Writer) error {
 					return match
 				}
 
-
 				// Check all parameters and remove those that are tracking parameters
 				q := u.Query()
 				changed := false
