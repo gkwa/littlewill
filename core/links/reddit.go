@@ -11,6 +11,21 @@ import (
 
 // Reddit-specific tracking parameters that should be removed (UTM parameters are handled by shared logic)
 var RedditSpecificTrackingParams = []string{
+	// Branch.io parameters (both encoded and decoded versions)
+	"%243p",
+	"$3p",
+	"%24deep_link",
+	"$deep_link",
+	"_branch_match_id",
+	"_branch_referrer",
+	// Analytics parameters
+	"correlation_id",
+	"post_fullname",
+	"post_index",
+	// Marketing parameters
+	"ref_campaign",
+	"ref_source",
+	// Legacy Reddit parameters
 	"share_id",
 	"cId",
 	"iId",
