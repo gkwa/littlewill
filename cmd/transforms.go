@@ -101,6 +101,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "amazon",
+		ConfigKey:      "transforms.amazon",
+		FlagName:       "enable-amazon",
+		Description:    "Enable Amazon URL parameter removal",
+		Function:       links.RemoveParamsFromAmazonURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "conditional",
 		ConfigKey:      "transforms.conditional",
 		FlagName:       "enable-conditional",
