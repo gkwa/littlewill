@@ -161,4 +161,3 @@ func setTransformDefaults() {
 		viper.SetDefault(transform.ConfigKey, transform.DefaultEnabled)
 	}
 }
-

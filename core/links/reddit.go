@@ -19,7 +19,9 @@ var RedditSpecificTrackingParams = []string{
 	"_branch_match_id",
 	"_branch_referrer",
 	// Analytics parameters
+	"cId",
 	"correlation_id",
+	"iId",
 	"post_fullname",
 	"post_index",
 	// Marketing parameters
@@ -27,8 +29,7 @@ var RedditSpecificTrackingParams = []string{
 	"ref_source",
 	// Legacy Reddit parameters
 	"share_id",
-	"cId",
-	"iId",
+	"target_user",
 }
 
 // isRedditURL checks if a URL is from Reddit
