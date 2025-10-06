@@ -83,20 +83,17 @@ func RemoveParamsFromAmazonURLs(r io.Reader, w io.Writer) error {
 
 				if isAmazonURL(u) {
 					q := u.Query()
-					changed := false
 
 					// Use shared logic for parameter removal
 					for param := range q {
 						if isAmazonTrackingParam(param) {
 							q.Del(param)
-							changed = true
 						}
 					}
 
-					if changed {
-						u.RawQuery = q.Encode()
-						return u.String()
-					}
+					// Always re-encode to normalize parameter order
+					u.RawQuery = q.Encode()
+					return u.String()
 				}
 
 				return match
