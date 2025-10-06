@@ -82,6 +82,16 @@ func RemoveParamsFromAmazonURLs(r io.Reader, w io.Writer) error {
 				}
 
 				if isAmazonURL(u) {
+					// Remove path segments that start with "ref="
+					pathSegments := strings.Split(u.Path, "/")
+					var cleanedSegments []string
+					for _, segment := range pathSegments {
+						if !strings.HasPrefix(segment, "ref=") {
+							cleanedSegments = append(cleanedSegments, segment)
+						}
+					}
+					u.Path = strings.Join(cleanedSegments, "/")
+
 					q := u.Query()
 
 					// Use shared logic for parameter removal

@@ -125,6 +125,26 @@ Another Amazon URL: https://www.amazon.com/s?k=laptop`,
 			input:    "https://www.amazon.co.uk/dp/B08N5WRWNW?ref=ppx_yo2ov&th=1&color=red",
 			expected: "https://www.amazon.co.uk/dp/B08N5WRWNW?color=red",
 		},
+		{
+			name:     "Amazon URL with path tracking segment (ref= in path)",
+			input:    "https://www.amazon.com/SAMSUNG-Unlocked-Smartphone-Charging-Expandable/dp/B0DLHNWHRF/ref=pd_ci_mcx_mh_mcx_views_0_title",
+			expected: "https://www.amazon.com/SAMSUNG-Unlocked-Smartphone-Charging-Expandable/dp/B0DLHNWHRF",
+		},
+		{
+			name:     "Amazon URL with path tracking segment and query params",
+			input:    "https://www.amazon.com/SAMSUNG-Unlocked-Smartphone-Charging-Expandable/dp/B0DLHNWHRF/ref=pd_ci_mcx_mh_mcx_views_0_title?th=1&variant=blue",
+			expected: "https://www.amazon.com/SAMSUNG-Unlocked-Smartphone-Charging-Expandable/dp/B0DLHNWHRF?variant=blue",
+		},
+		{
+			name:     "Amazon URL with simple path tracking",
+			input:    "https://www.amazon.com/dp/B08N5WRWNW/ref=something",
+			expected: "https://www.amazon.com/dp/B08N5WRWNW",
+		},
+		{
+			name:     "Amazon URL with ref in middle of path",
+			input:    "https://www.amazon.com/product-name/dp/B08N5WRWNW/ref=tracking/extra-segment",
+			expected: "https://www.amazon.com/product-name/dp/B08N5WRWNW/extra-segment",
+		},
 	}
 
 	for _, tc := range testCases {
