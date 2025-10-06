@@ -131,10 +131,12 @@ Another Amazon URL: https://www.amazon.com/s?k=laptop`,
 		t.Run(tc.name, func(t *testing.T) {
 			input := strings.NewReader(tc.input)
 			var output bytes.Buffer
+
 			err := RemoveParamsFromAmazonURLs(input, &output)
 			if err != nil {
 				t.Fatalf("Unexpected error: %v", err)
 			}
+
 			result := output.String()
 			if diff := cmp.Diff(tc.expected, result); diff != "" {
 				t.Errorf("Unexpected result (-want +got):\n%s", diff)
