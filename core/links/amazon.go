@@ -12,7 +12,24 @@ import (
 
 // Amazon-specific tracking parameters that should be removed
 var AmazonTrackingParams = []string{
+	"_encoding",
+	"content-id",
+	"crid",
+	"cv_ct_cx",
+	"keywords",
+	"pd_rd_i",
+	"pd_rd_r",
+	"pd_rd_w",
+	"pd_rd_wg",
+	"pf_rd_p",
+	"pf_rd_r",
+	"qid",
 	"ref",
+	"ref_",
+	"sbo",
+	"sp_csd",
+	"sprefix",
+	"sr",
 	"th",
 }
 
