@@ -16,6 +16,8 @@ var AmazonTrackingParams = []string{
 	"content-id",
 	"crid",
 	"cv_ct_cx",
+	"dib",
+	"dib_tag",
 	"keywords",
 	"pd_rd_i",
 	"pd_rd_r",
