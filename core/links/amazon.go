@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -33,12 +34,7 @@ func isAmazonTrackingParam(param string) bool {
 	}
 
 	// Check Amazon-specific parameters
-	for _, p := range AmazonTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-	return false
+	return slices.Contains(AmazonTrackingParams, param)
 }
 
 // RemoveParamsFromAmazonURLs removes tracking parameters from Amazon URLs
