@@ -77,14 +77,6 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
-		Name:           "mailchimp",
-		ConfigKey:      "transforms.mailchimp",
-		FlagName:       "enable-mailchimp",
-		Description:    "Enable Mailchimp URL parameter removal",
-		Function:       links.RemoveParamsFromMailchimpURLs,
-		DefaultEnabled: true,
-	},
-	{
 		Name:           "wsj",
 		ConfigKey:      "transforms.wsj",
 		FlagName:       "enable-wsj",
