@@ -77,6 +77,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "mailchimp",
+		ConfigKey:      "transforms.mailchimp",
+		FlagName:       "enable-mailchimp",
+		Description:    "Enable Mailchimp URL parameter removal",
+		Function:       links.RemoveParamsFromMailchimpURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "wsj",
 		ConfigKey:      "transforms.wsj",
 		FlagName:       "enable-wsj",
@@ -129,35 +137,4 @@ var AllTransforms = []TransformDefinition{
 		ConfigKey:      "transforms.youtube_count",
 		FlagName:       "enable-youtube-count",
 		Description:    "Enable YouTube count removal from markdown links",
-		Function:       links.RemoveYouTubeCountFromMarkdownLinks,
-		DefaultEnabled: true,
-	},
-}
-
-// buildLinkTransforms creates the list of enabled transformations based on configuration
-func buildLinkTransforms() []func(io.Reader, io.Writer) error {
-	var transforms []func(io.Reader, io.Writer) error
-
-	for _, transform := range AllTransforms {
-		if viper.GetBool(transform.ConfigKey) {
-			transforms = append(transforms, transform.Function)
-		}
-	}
-
-	return transforms
-}
-
-// setupTransformFlags adds flags and config bindings for all transforms
-func setupTransformFlags(cmd *cobra.Command) {
-	for _, transform := range AllTransforms {
-		cmd.PersistentFlags().Bool(transform.FlagName, transform.DefaultEnabled, transform.Description)
-		viper.BindPFlag(transform.ConfigKey, cmd.PersistentFlags().Lookup(transform.FlagName))
-	}
-}
-
-// setTransformDefaults sets default values for all transforms in viper
-func setTransformDefaults() {
-	for _, transform := range AllTransforms {
-		viper.SetDefault(transform.ConfigKey, transform.DefaultEnabled)
-	}
-}
+		Function:       links.RemoveY
