@@ -18,6 +18,7 @@ var AmazonTrackingParams = []string{
 	"cv_ct_cx",
 	"dib",
 	"dib_tag",
+	"ds",
 	"keywords",
 	"pd_rd_i",
 	"pd_rd_r",
