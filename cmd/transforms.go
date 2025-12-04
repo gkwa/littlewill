@@ -109,6 +109,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "bloomberg",
+		ConfigKey:      "transforms.bloomberg",
+		FlagName:       "enable-bloomberg",
+		Description:    "Enable Bloomberg URL parameter removal",
+		Function:       links.RemoveParamsFromBloombergURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "conditional",
 		ConfigKey:      "transforms.conditional",
 		FlagName:       "enable-conditional",
