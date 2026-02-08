@@ -37,7 +37,7 @@ Another link: https://www.google.com/search?q=example`,
 const youtubeUrl = "https://youtu.be/dQw4w9WgXcQ?si=abcdefghijklmnop";
 ` + "```" + `
 Another video: https://youtu.be/dQw4w9WgXcQ?si=qrstuvwxyz123456`,
-			expected: `Watch this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+			expected: `Watch this video: https://youtu.be/dQw4w9WgXcQ
 ` + "```" + `
 const youtubeUrl = "https://youtu.be/dQw4w9WgXcQ?si=abcdefghijklmnop";
 ` + "```" + `
@@ -73,7 +73,7 @@ Google: https://www.google.com/search?q=example&hl=fr
 YouTube: https://youtu.be/dQw4w9WgXcQ?si=qrstuvwxyz123456
 Substack: https://another.substack.com/p/another-article?utm_campaign=post`,
 			expected: `Google: https://www.google.com/search?q=test
-YouTube: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+YouTube: https://youtu.be/dQw4w9WgXcQ
 Substack: https://example.substack.com/p/article-title
 ` + "```" + `
 const urls = {

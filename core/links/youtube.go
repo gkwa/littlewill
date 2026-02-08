@@ -90,6 +90,15 @@ func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 						}
 					}
 
+					// Convert youtube.com/watch?v=X to youtu.be/X
+					if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && u.Path == "/watch" && q.Has("v") {
+						videoID := q.Get("v")
+						q.Del("v")
+						u.Host = "youtu.be"
+						u.Path = "/" + videoID
+						changed = true
+					}
+
 					if changed {
 						u.RawQuery = q.Encode()
 						return u.String()

@@ -23,7 +23,7 @@ func TestRemoveParamsFromYouTubeURLs(t *testing.T) {
 		{
 			name:     "YouTube link with only si parameter",
 			input:    "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=AnotherParam",
-			expected: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+			expected: "https://youtu.be/dQw4w9WgXcQ",
 		},
 		{
 			name:     "YouTube link with only app parameter",
@@ -33,12 +33,12 @@ func TestRemoveParamsFromYouTubeURLs(t *testing.T) {
 		{
 			name:     "YouTube link without tracking parameters",
 			input:    "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-			expected: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+			expected: "https://youtu.be/dQw4w9WgXcQ",
 		},
 		{
 			name:     "YouTube link with mixed parameters",
 			input:    "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=test123&list=PLx2ksyallYzW4WNYHD9xOFrPRYGlntAft&app=mobile",
-			expected: "https://www.youtube.com/watch?list=PLx2ksyallYzW4WNYHD9xOFrPRYGlntAft&v=dQw4w9WgXcQ",
+			expected: "https://youtu.be/dQw4w9WgXcQ?list=PLx2ksyallYzW4WNYHD9xOFrPRYGlntAft",
 		},
 		{
 			name:     "Non-YouTube link with si parameter",
@@ -53,7 +53,7 @@ And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=AnotherParam&app=De
 `,
 			expected: `
 Check out this video: https://youtu.be/JSKJbGi5oNA
-And this one: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+And this one: https://youtu.be/dQw4w9WgXcQ
 `,
 		},
 		{
@@ -71,7 +71,7 @@ Another YouTube URL: https://www.youtube.com/watch?v=test123&si=remove&app=remov
 var youtubeUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ&si=AnotherParam&app=mobile";
 ` + "```" + `
 
-Another YouTube URL: https://www.youtube.com/watch?v=test123`,
+Another YouTube URL: https://youtu.be/test123`,
 		},
 		{
 			name:     "YouTube short link",
