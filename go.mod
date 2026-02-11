@@ -2,7 +2,7 @@ module github.com/gkwa/littlewill
 
 go 1.25.0
 
-toolchain go1.25.7
+toolchain go1.26.0
 
 require (
 	github.com/fatih/color v1.18.0
