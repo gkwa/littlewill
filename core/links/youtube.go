@@ -14,6 +14,7 @@ import (
 var YouTubeParamsToRemove = []string{
 	"si",
 	"app",
+	"feature",
 }
 
 var youtubeCountRegex *regexp.Regexp

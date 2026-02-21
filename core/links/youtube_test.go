@@ -78,6 +78,21 @@ Another YouTube URL: https://youtu.be/test123`,
 			input:    "https://youtu.be/dQw4w9WgXcQ?si=test123&app=mobile&other=keep",
 			expected: "https://youtu.be/dQw4w9WgXcQ?other=keep",
 		},
+		{
+			name:     "YouTube link with feature parameter",
+			input:    "https://youtu.be/yIYEQHtmUIs?feature=youtu.be",
+			expected: "https://youtu.be/yIYEQHtmUIs",
+		},
+		{
+			name:     "YouTube link with feature and other parameters",
+			input:    "https://youtu.be/yIYEQHtmUIs?feature=youtu.be&si=abc123&other=keep",
+			expected: "https://youtu.be/yIYEQHtmUIs?other=keep",
+		},
+		{
+			name:     "YouTube watch URL with feature parameter",
+			input:    "https://www.youtube.com/watch?v=yIYEQHtmUIs&feature=youtu.be",
+			expected: "https://youtu.be/yIYEQHtmUIs",
+		},
 	}
 
 	for _, tc := range testCases {
