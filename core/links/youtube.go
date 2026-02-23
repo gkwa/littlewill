@@ -15,6 +15,8 @@ var YouTubeParamsToRemove = []string{
 	"si",
 	"app",
 	"feature",
+	"sqp",
+	"rs",
 }
 
 var youtubeCountRegex *regexp.Regexp
@@ -44,6 +46,7 @@ func isYouTubeURL(u *url.URL) bool {
 	youTubeDomains := []string{
 		"youtube.com",
 		"youtu.be",
+		"ytimg.com",
 	}
 	for _, domain := range youTubeDomains {
 		if strings.Contains(strings.ToLower(u.Hostname()), domain) {

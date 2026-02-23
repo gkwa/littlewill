@@ -93,6 +93,21 @@ Another YouTube URL: https://youtu.be/test123`,
 			input:    "https://www.youtube.com/watch?v=yIYEQHtmUIs&feature=youtu.be",
 			expected: "https://youtu.be/yIYEQHtmUIs",
 		},
+		{
+			name:     "YouTube thumbnail URL with sqp and rs parameters",
+			input:    "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD&rs=AOn4CLDZsaOqJTdkzdzhoYn_mL-Y_caRfw",
+			expected: "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
+		},
+		{
+			name:     "YouTube thumbnail URL with only sqp parameter",
+			input:    "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg?sqp=-oaymwEhCK4FEIIDSFryq4qpAxMIARUAAAAAGAElAADIQj0AgKJD",
+			expected: "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
+		},
+		{
+			name:     "YouTube thumbnail URL without tracking parameters",
+			input:    "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
+			expected: "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
+		},
 	}
 
 	for _, tc := range testCases {
@@ -135,6 +150,11 @@ func TestIsYouTubeURL(t *testing.T) {
 		{
 			name:     "YouTube subdomain",
 			input:    "https://music.youtube.com/watch?v=dQw4w9WgXcQ",
+			expected: true,
+		},
+		{
+			name:     "YouTube image CDN",
+			input:    "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
 			expected: true,
 		},
 	}
