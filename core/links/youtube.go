@@ -103,6 +103,14 @@ func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
 						changed = true
 					}
 
+					// Convert youtube.com/shorts/VIDEO_ID to youtu.be/VIDEO_ID
+					if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && strings.HasPrefix(u.Path, "/shorts/") {
+						videoID := strings.TrimPrefix(u.Path, "/shorts/")
+						u.Host = "youtu.be"
+						u.Path = "/" + videoID
+						changed = true
+					}
+
 					if changed {
 						u.RawQuery = q.Encode()
 						return u.String()

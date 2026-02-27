@@ -108,6 +108,21 @@ Another YouTube URL: https://youtu.be/test123`,
 			input:    "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
 			expected: "https://i.ytimg.com/vi/dDugWzbzhZw/hq720.jpg",
 		},
+		{
+			name:     "YouTube Shorts URL",
+			input:    "https://www.youtube.com/shorts/Q05BvncrHSc",
+			expected: "https://youtu.be/Q05BvncrHSc",
+		},
+		{
+			name:     "YouTube Shorts URL with tracking parameters",
+			input:    "https://www.youtube.com/shorts/Q05BvncrHSc?si=abc123&app=mobile",
+			expected: "https://youtu.be/Q05BvncrHSc",
+		},
+		{
+			name:     "YouTube Shorts URL preserving non-tracking parameters",
+			input:    "https://www.youtube.com/shorts/Q05BvncrHSc?si=abc123&other=keep",
+			expected: "https://youtu.be/Q05BvncrHSc?other=keep",
+		},
 	}
 
 	for _, tc := range testCases {
