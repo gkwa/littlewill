@@ -69,6 +69,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "facebook",
+		ConfigKey:      "transforms.facebook",
+		FlagName:       "enable-facebook",
+		Description:    "Enable Facebook URL parameter removal",
+		Function:       links.RemoveParamsFromFacebookURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "linkedin",
 		ConfigKey:      "transforms.linkedin",
 		FlagName:       "enable-linkedin",
