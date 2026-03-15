@@ -25,6 +25,11 @@ func TestRemoveParamsFromFacebookURLs(t *testing.T) {
 			expected: "https://www.facebook.com/marketplace/item/809426435533151",
 		},
 		{
+			name:     "Facebook reel URL with referral_source and surface params",
+			input:    "https://www.facebook.com/reel/762313063202501/?referral_source=video_home&surface_type=tab&in_reels_tab_context=TRUE",
+			expected: "https://www.facebook.com/reel/762313063202501/",
+		},
+		{
 			name:     "Non-Facebook URL with referral_code is unchanged",
 			input:    "https://example.com/signup?referral_code=FRIEND10",
 			expected: "https://example.com/signup?referral_code=FRIEND10",
