@@ -17,10 +17,10 @@ type ConditionalParamGroup struct {
 
 // RemoveConditionalParams removes parameters only when all parameters in a group are present
 func RemoveConditionalParams(r io.Reader, w io.Writer) error {
-	// Define conditional parameter groups
+	// These parameters must all be present to be removed
 	conditionalGroups := []ConditionalParamGroup{
 		{
-			Params: []string{"isFreemail", "r", "triedRedirect", "post_id", "publication_id"},
+			Params: []string{"isFreemail", "r", "triedRedirect"},
 		},
 		// Add more conditional groups here as needed
 		// {
