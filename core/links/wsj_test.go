@@ -66,11 +66,9 @@ var url = "https://www.wsj.com/tech/article?mod=trending&reflink=desktopwebshare
 ` + "```" + `
 Another URL: https://www.wsj.com/business/another?mod=test&reflink=twitter&st=xyz789`,
 			expected: `Check this URL: https://www.wsj.com/tech/article
-
 ` + "```" + `
 var url = "https://www.wsj.com/tech/article?mod=trending&reflink=desktopwebshare_permalink&st=abc123";
 ` + "```" + `
-
 Another URL: https://www.wsj.com/business/another`,
 		},
 		{
