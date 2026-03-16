@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"sort"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -73,7 +74,26 @@ func buildFragmentFromParams(values url.Values) string {
 	if len(values) == 0 {
 		return ""
 	}
-	return values.Encode()
+
+	var pairs []string
+	keys := make([]string, 0, len(values))
+	for k := range values {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+
+	for _, k := range keys {
+		for _, v := range values[k] {
+			if v == "" {
+				pairs = append(pairs, url.QueryEscape(k))
+			} else {
+				// Use fmt.Sprintf for manual formatting, ensuring QueryEscape is applied to values
+				pairs = append(pairs, fmt.Sprintf("%s=%s", url.QueryEscape(k), url.QueryEscape(v)))
+			}
+		}
+	}
+
+	return strings.Join(pairs, "&")
 }
 
 // RemoveGenericTrackingParams removes common tracking parameters from all URLs
