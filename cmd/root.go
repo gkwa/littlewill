@@ -80,7 +80,6 @@ func initConfig() {
 	setTransformDefaults()
 
 	if err := viper.ReadInConfig(); err == nil {
-		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
 
 	logFormat = viper.GetString("log-format")
