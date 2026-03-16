@@ -37,7 +37,7 @@ func TestRemoveParamsFromShopifyURLs(t *testing.T) {
 		{
 			name:     "Shopify URL without tracking parameters",
 			input:    "https://store.myshopify.com/products/item?variant=123&color=blue",
-			expected: "https://store.myshopify.com/products/item?color=blue&variant=123",
+			expected: "https://store.myshopify.com/products/item?variant=123&color=blue",
 		},
 		{
 			name:     "Non-Shopify URL with pr_ parameters",
