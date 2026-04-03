@@ -6,11 +6,9 @@ import (
 	"net/url"
 	"regexp"
 	"strings"
-
-	"mvdan.cc/xurls/v2"
 )
 
-// YouTube parameters that should be removed
+// YouTubeParamsToRemove are YouTube parameters that should be removed
 var YouTubeParamsToRemove = []string{
 	"si",
 	"app",
@@ -58,84 +56,51 @@ func isYouTubeURL(u *url.URL) bool {
 
 // RemoveParamsFromYouTubeURLs removes tracking parameters from YouTube URLs
 func RemoveParamsFromYouTubeURLs(r io.Reader, w io.Writer) error {
-	buf, err := io.ReadAll(r)
-	if err != nil {
-		return fmt.Errorf("RemoveParamsFromYouTubeURLs: failed to read input: %w", err)
-	}
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		if !isYouTubeURL(u) {
+			return u
+		}
 
-	codeBlockLevel := 0
-	lines := strings.Split(string(buf), "\n")
-	for i, line := range lines {
-		trimmedLine := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmedLine, "```") {
-			if codeBlockLevel == 0 {
-				codeBlockLevel++
-			} else {
-				codeBlockLevel--
+		q := u.Query()
+		changed := false
+
+		for _, param := range YouTubeParamsToRemove {
+			if q.Has(param) {
+				q.Del(param)
+				changed = true
 			}
 		}
 
-		if codeBlockLevel == 0 {
-			rxStrict := xurls.Strict()
-			lines[i] = rxStrict.ReplaceAllStringFunc(line, func(match string) string {
-				u, err := url.Parse(match)
-				if err != nil {
-					return match
-				}
-
-				if isYouTubeURL(u) {
-					q := u.Query()
-					changed := false
-
-					for _, param := range YouTubeParamsToRemove {
-						if q.Has(param) {
-							q.Del(param)
-							changed = true
-						}
-					}
-
-					// Convert youtube.com/watch?v=X to youtu.be/X
-					if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && u.Path == "/watch" && q.Has("v") {
-						videoID := q.Get("v")
-						q.Del("v")
-						u.Host = "youtu.be"
-						u.Path = "/" + videoID
-						changed = true
-					}
-
-					// Convert youtube.com/shorts/VIDEO_ID to youtu.be/VIDEO_ID
-					if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && strings.HasPrefix(u.Path, "/shorts/") {
-						videoID := strings.TrimPrefix(u.Path, "/shorts/")
-						u.Host = "youtu.be"
-						u.Path = "/" + videoID
-						changed = true
-					}
-
-					// Convert youtube.com/live/VIDEO_ID to youtu.be/VIDEO_ID
-					if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && strings.HasPrefix(u.Path, "/live/") {
-						videoID := strings.TrimPrefix(u.Path, "/live/")
-						u.Host = "youtu.be"
-						u.Path = "/" + videoID
-						changed = true
-					}
-
-					if changed {
-						u.RawQuery = q.Encode()
-						return u.String()
-					}
-				}
-
-				return match
-			})
+		// Convert youtube.com/watch?v=X to youtu.be/X
+		if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && u.Path == "/watch" && q.Has("v") {
+			videoID := q.Get("v")
+			q.Del("v")
+			u.Host = "youtu.be"
+			u.Path = "/" + videoID
+			changed = true
 		}
-	}
 
-	_, err = w.Write([]byte(strings.Join(lines, "\n")))
-	if err != nil {
-		return fmt.Errorf("RemoveParamsFromYouTubeURLs: failed to write output: %w", err)
-	}
+		// Convert youtube.com/shorts/VIDEO_ID to youtu.be/VIDEO_ID
+		if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && strings.HasPrefix(u.Path, "/shorts/") {
+			videoID := strings.TrimPrefix(u.Path, "/shorts/")
+			u.Host = "youtu.be"
+			u.Path = "/" + videoID
+			changed = true
+		}
 
-	return nil
+		// Convert youtube.com/live/VIDEO_ID to youtu.be/VIDEO_ID
+		if strings.Contains(strings.ToLower(u.Hostname()), "youtube.com") && strings.HasPrefix(u.Path, "/live/") {
+			videoID := strings.TrimPrefix(u.Path, "/live/")
+			u.Host = "youtu.be"
+			u.Path = "/" + videoID
+			changed = true
+		}
+
+		if changed {
+			u.RawQuery = q.Encode()
+		}
+		return u
+	})
 }
 
 // RemoveYouTubeCountFromMarkdownLinks removes view counts from YouTube markdown links
