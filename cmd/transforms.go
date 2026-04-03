@@ -125,6 +125,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "netflix",
+		ConfigKey:      "transforms.netflix",
+		FlagName:       "enable-netflix",
+		Description:    "Enable Netflix URL parameter removal",
+		Function:       links.RemoveParamsFromNetflixURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "conditional",
 		ConfigKey:      "transforms.conditional",
 		FlagName:       "enable-conditional",
