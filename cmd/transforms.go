@@ -133,6 +133,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "instagram",
+		ConfigKey:      "transforms.instagram",
+		FlagName:       "enable-instagram",
+		Description:    "Enable Instagram URL parameter removal",
+		Function:       links.RemoveParamsFromInstagramURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "conditional",
 		ConfigKey:      "transforms.conditional",
 		FlagName:       "enable-conditional",
