@@ -1,13 +1,10 @@
 package links
 
 import (
-	"fmt"
 	"io"
 	"net/url"
 	"slices"
 	"strings"
-
-	"mvdan.cc/xurls/v2"
 )
 
 var excludePatterns = []string{
@@ -59,49 +56,23 @@ var ParamsToRemove = []string{
 }
 
 func RemoveParamsFromGoogleURLs(r io.Reader, w io.Writer) error {
-	buf, err := io.ReadAll(r)
-	if err != nil {
-		return fmt.Errorf("RemoveParamsFromGoogleLinks: failed to read input: %w", err)
-	}
-
-	codeBlockLevel := 0
-	lines := strings.Split(string(buf), "\n")
-	for i, line := range lines {
-		trimmedLine := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmedLine, "```") {
-			if codeBlockLevel == 0 {
-				codeBlockLevel++
-			} else {
-				codeBlockLevel--
-			}
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		if isExcludedURL(u.String()) {
+			return u
 		}
-
-		if codeBlockLevel == 0 {
-			rxStrict := xurls.Strict()
-			lines[i] = rxStrict.ReplaceAllStringFunc(line, func(match string) string {
-				if isExcludedURL(match) {
-					return match
-				}
-
-				if strings.Contains(strings.ToLower(match), "google.com") {
-					cleanedURL, _, err := cleanGoogleURL(match)
-					if err != nil {
-						return match
-					}
-					return cleanedURL
-				}
-
-				return match
-			})
+		if !strings.Contains(strings.ToLower(u.Hostname()), "google.com") {
+			return u
 		}
-	}
-
-	_, err = w.Write([]byte(strings.Join(lines, "\n")))
-	if err != nil {
-		return fmt.Errorf("RemoveParamsFromGoogleLinks: failed to write output: %w", err)
-	}
-
-	return nil
+		cleaned, _, err := cleanGoogleURL(u.String())
+		if err != nil {
+			return u
+		}
+		parsed, err := url.Parse(cleaned)
+		if err != nil {
+			return u
+		}
+		return parsed
+	})
 }
 
 func isExcludedURL(urlStr string) bool {
