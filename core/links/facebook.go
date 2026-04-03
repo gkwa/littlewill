@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -28,16 +29,7 @@ func isFacebookURL(u *url.URL) bool {
 
 // isFacebookTrackingParam checks if a parameter should be removed from Facebook URLs
 func isFacebookTrackingParam(param string) bool {
-	if isUTMParam(param) {
-		return true
-	}
-
-	for _, p := range FacebookSpecificTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-	return false
+	return isUTMParam(param) || slices.Contains(FacebookSpecificTrackingParams, param)
 }
 
 // RemoveParamsFromFacebookURLs removes tracking parameters from Facebook URLs

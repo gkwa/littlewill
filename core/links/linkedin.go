@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -21,18 +22,7 @@ func isLinkedInURL(u *url.URL) bool {
 
 // isLinkedInTrackingParam checks if a parameter should be removed from LinkedIn URLs
 func isLinkedInTrackingParam(param string) bool {
-	// Reuse shared UTM logic
-	if isUTMParam(param) {
-		return true
-	}
-
-	// Check LinkedIn-specific parameters
-	for _, p := range LinkedInSpecificTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-	return false
+	return isUTMParam(param) || slices.Contains(LinkedInSpecificTrackingParams, param)
 }
 
 // RemoveParamsFromLinkedInURLs removes tracking parameters from LinkedIn URLs

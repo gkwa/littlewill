@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -112,15 +113,6 @@ func isExcludedURL(urlStr string) bool {
 	return false
 }
 
-func contains(slice []string, item string) bool {
-	for _, s := range slice {
-		if s == item {
-			return true
-		}
-	}
-	return false
-}
-
 func cleanGoogleURL(urlStr string) (string, []string, error) {
 	u, err := url.Parse(urlStr)
 	if err != nil {
@@ -132,7 +124,7 @@ func cleanGoogleURL(urlStr string) (string, []string, error) {
 	var remainingParams []string
 
 	for param := range q {
-		if contains(KeepParams, param) || !contains(ParamsToRemove, param) {
+		if slices.Contains(KeepParams, param) || !slices.Contains(ParamsToRemove, param) {
 			remainingParams = append(remainingParams, param)
 			continue
 		}

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -43,19 +44,7 @@ func isRedditURL(u *url.URL) bool {
 
 // isRedditTrackingParam checks if a parameter should be removed from Reddit URLs
 func isRedditTrackingParam(param string) bool {
-	// Reuse shared UTM logic
-	if isUTMParam(param) {
-		return true
-	}
-
-	// Check Reddit-specific parameters
-	for _, p := range RedditSpecificTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-
-	return false
+	return isUTMParam(param) || slices.Contains(RedditSpecificTrackingParams, param)
 }
 
 // RemoveParamsFromRedditURLs removes tracking parameters from Reddit URLs

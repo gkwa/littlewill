@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"strings"
 
 	"mvdan.cc/xurls/v2"
@@ -23,18 +24,7 @@ func isTechCrunchURL(u *url.URL) bool {
 
 // isTechCrunchTrackingParam checks if a parameter should be removed from TechCrunch URLs
 func isTechCrunchTrackingParam(param string) bool {
-	// Reuse shared UTM logic
-	if isUTMParam(param) {
-		return true
-	}
-
-	// Check TechCrunch-specific parameters
-	for _, p := range TechCrunchSpecificTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-	return false
+	return isUTMParam(param) || slices.Contains(TechCrunchSpecificTrackingParams, param)
 }
 
 // RemoveParamsFromTechCrunchURLs removes tracking parameters from TechCrunch email URLs

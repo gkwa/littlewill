@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io"
 	"net/url"
+	"slices"
 	"sort"
 	"strings"
 
@@ -44,16 +45,7 @@ var CommonTrackingParams = []string{
 
 // isTrackingParam checks if a parameter should be removed (either UTM or in the common tracking list)
 func isTrackingParam(param string) bool {
-	if isUTMParam(param) {
-		return true
-	}
-
-	for _, p := range CommonTrackingParams {
-		if p == param {
-			return true
-		}
-	}
-	return false
+	return isUTMParam(param) || slices.Contains(CommonTrackingParams, param)
 }
 
 // parseFragmentParams parses fragment content that contains URL-style parameters
