@@ -7,11 +7,9 @@ import (
 	"slices"
 	"sort"
 	"strings"
-
-	"mvdan.cc/xurls/v2"
 )
 
-// Common tracking parameters that should be removed from all URLs
+// CommonTrackingParams are common tracking parameters that should be removed from all URLs
 var CommonTrackingParams = []string{
 	"_bhlid",
 	"_ga",
@@ -50,7 +48,6 @@ func isTrackingParam(param string) bool {
 
 // parseFragmentParams parses fragment content that contains URL-style parameters
 func parseFragmentParams(fragment string) (url.Values, error) {
-	// If fragment looks like it contains parameters (has = and &), parse it
 	if strings.Contains(fragment, "=") {
 		values, err := url.ParseQuery(fragment)
 		if err != nil {
@@ -79,7 +76,6 @@ func buildFragmentFromParams(values url.Values) string {
 			if v == "" {
 				pairs = append(pairs, url.QueryEscape(k))
 			} else {
-				// Use fmt.Sprintf for manual formatting, ensuring QueryEscape is applied to values
 				pairs = append(pairs, fmt.Sprintf("%s=%s", url.QueryEscape(k), url.QueryEscape(v)))
 			}
 		}
@@ -90,75 +86,35 @@ func buildFragmentFromParams(values url.Values) string {
 
 // RemoveGenericTrackingParams removes common tracking parameters from all URLs
 func RemoveGenericTrackingParams(r io.Reader, w io.Writer) error {
-	buf, err := io.ReadAll(r)
-	if err != nil {
-		return fmt.Errorf("RemoveGenericTrackingParams: failed to read input: %w", err)
-	}
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		q := u.Query()
+		changed := false
+		for param := range q {
+			if isTrackingParam(param) {
+				q.Del(param)
+				changed = true
+			}
+		}
+		if changed {
+			u.RawQuery = q.Encode()
+		}
 
-	codeBlockLevel := 0
-	lines := strings.Split(string(buf), "\n")
-	for i, line := range lines {
-		trimmedLine := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmedLine, "```") {
-			if codeBlockLevel == 0 {
-				codeBlockLevel++
-			} else {
-				codeBlockLevel--
+		if u.Fragment != "" {
+			fragmentParams, err := parseFragmentParams(u.Fragment)
+			if err == nil && fragmentParams != nil {
+				fragmentChanged := false
+				for param := range fragmentParams {
+					if isTrackingParam(param) {
+						fragmentParams.Del(param)
+						fragmentChanged = true
+					}
+				}
+				if fragmentChanged {
+					u.Fragment = buildFragmentFromParams(fragmentParams)
+				}
 			}
 		}
 
-		if codeBlockLevel == 0 {
-			rxStrict := xurls.Strict()
-			lines[i] = rxStrict.ReplaceAllStringFunc(line, func(match string) string {
-				u, err := url.Parse(match)
-				if err != nil {
-					return match
-				}
-
-				// Check all parameters and remove those that are tracking parameters
-				q := u.Query()
-				changed := false
-				for param := range q {
-					if isTrackingParam(param) {
-						q.Del(param)
-						changed = true
-					}
-				}
-
-				if changed {
-					u.RawQuery = q.Encode()
-				}
-
-				// Handle fragment parameters
-				if u.Fragment != "" {
-					fragmentParams, err := parseFragmentParams(u.Fragment)
-					if err == nil && fragmentParams != nil {
-						fragmentChanged := false
-						for param := range fragmentParams {
-							if isTrackingParam(param) {
-								fragmentParams.Del(param)
-								fragmentChanged = true
-							}
-						}
-						if fragmentChanged {
-							u.Fragment = buildFragmentFromParams(fragmentParams)
-							changed = true
-						}
-					}
-				}
-
-				if changed {
-					return u.String()
-				}
-
-				return match
-			})
-		}
-	}
-
-	_, err = w.Write([]byte(strings.Join(lines, "\n")))
-	if err != nil {
-		return fmt.Errorf("RemoveGenericTrackingParams: failed to write output: %w", err)
-	}
-	return nil
+		return u
+	})
 }
