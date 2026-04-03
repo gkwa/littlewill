@@ -1,16 +1,13 @@
 package links
 
 import (
-	"fmt"
 	"io"
 	"net/url"
 	"slices"
 	"strings"
-
-	"mvdan.cc/xurls/v2"
 )
 
-// Reddit-specific tracking parameters that should be removed (UTM parameters are handled by shared logic)
+// RedditSpecificTrackingParams are Reddit-specific params (UTM parameters are handled by shared logic)
 var RedditSpecificTrackingParams = []string{
 	// Branch.io parameters (both encoded and decoded versions)
 	"%243p",
@@ -48,61 +45,22 @@ func isRedditTrackingParam(param string) bool {
 }
 
 // RemoveParamsFromRedditURLs removes tracking parameters from Reddit URLs
-// Uses shared UTM detection logic plus Reddit-specific parameters
 func RemoveParamsFromRedditURLs(r io.Reader, w io.Writer) error {
-	buf, err := io.ReadAll(r)
-	if err != nil {
-		return fmt.Errorf("RemoveParamsFromRedditURLs: failed to read input: %w", err)
-	}
-
-	codeBlockLevel := 0
-	lines := strings.Split(string(buf), "\n")
-
-	for i, line := range lines {
-		trimmedLine := strings.TrimSpace(line)
-		if strings.HasPrefix(trimmedLine, "```") {
-			if codeBlockLevel == 0 {
-				codeBlockLevel++
-			} else {
-				codeBlockLevel--
+	return processURLs(r, w, func(u *url.URL) *url.URL {
+		if !isRedditURL(u) {
+			return u
+		}
+		q := u.Query()
+		changed := false
+		for param := range q {
+			if isRedditTrackingParam(param) {
+				q.Del(param)
+				changed = true
 			}
 		}
-
-		if codeBlockLevel == 0 {
-			rxStrict := xurls.Strict()
-			lines[i] = rxStrict.ReplaceAllStringFunc(line, func(match string) string {
-				u, err := url.Parse(match)
-				if err != nil {
-					return match
-				}
-
-				if isRedditURL(u) {
-					q := u.Query()
-					changed := false
-
-					// Use shared logic for parameter removal
-					for param := range q {
-						if isRedditTrackingParam(param) {
-							q.Del(param)
-							changed = true
-						}
-					}
-
-					if changed {
-						u.RawQuery = q.Encode()
-						return u.String()
-					}
-				}
-
-				return match
-			})
+		if changed {
+			u.RawQuery = q.Encode()
 		}
-	}
-
-	_, err = w.Write([]byte(strings.Join(lines, "\n")))
-	if err != nil {
-		return fmt.Errorf("RemoveParamsFromRedditURLs: failed to write output: %w", err)
-	}
-
-	return nil
+		return u
+	})
 }
