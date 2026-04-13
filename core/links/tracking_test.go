@@ -55,6 +55,11 @@ func TestRemoveGenericTrackingParams(t *testing.T) {
 			expected: "https://example.com/page?id=789",
 		},
 		{
+			name:     "URL with HubSpot tracking parameters",
+			input:    "https://towardsdatascience.com/stop-treating-ai-memory-like-a-search-problem/?utm_source=newsletter&utm_medium=email&utm_campaign=tds+daily&_hsenc=p2ANqtz--abc123&_hsmi=456",
+			expected: "https://towardsdatascience.com/stop-treating-ai-memory-like-a-search-problem/",
+		},
+		{
 			name:     "URL with fragment tracking parameters",
 			input:    "https://musclemommasourdough.com/roasted-garlic-and-parmesan-sourdough-loaf/#growUnverifiedReaderId=4e75e57c-2848-4936-aa15-0e45cc7a0652&growAuthSource=espLink&growSource=espLink",
 			expected: "https://musclemommasourdough.com/roasted-garlic-and-parmesan-sourdough-loaf/",
@@ -174,6 +179,9 @@ func TestIsTrackingParam(t *testing.T) {
 		{"source", true},
 		{"medium", true},
 		{"campaign", true},
+		// HubSpot tracking parameters
+		{"_hsenc", true},
+		{"_hsmi", true},
 		// Fragment tracking parameters
 		{"growUnverifiedReaderId", true},
 		{"growAuthSource", true},

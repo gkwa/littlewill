@@ -15,6 +15,8 @@ var CommonTrackingParams = []string{
 	"_ga",
 	"_ga_ECJJ2Q2SJQ",
 	"_gl",
+	"_hsenc",
+	"_hsmi",
 	"campaign",
 	"cid",
 	"ck_subscriber_id",
