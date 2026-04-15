@@ -1,7 +1,6 @@
 package logger
 
 import (
-	"io"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -10,7 +9,6 @@ import (
 	"github.com/fatih/color"
 	"github.com/go-logr/logr"
 	"github.com/go-logr/zerologr"
-	gcrLog "github.com/google/go-containerregistry/pkg/logs"
 	"github.com/rs/zerolog"
 	runtimeLog "sigs.k8s.io/controller-runtime/pkg/log"
 )
@@ -48,8 +46,6 @@ func NewConsoleLogger(verbose, jsonFormat bool) logr.Logger {
 	} else {
 		zlog = zlog.Level(zerolog.InfoLevel)
 	}
-
-	gcrLog.Warn.SetOutput(io.Discard)
 
 	zerologr.VerbosityFieldName = "v"
 	log := zerologr.New(&zlog)
