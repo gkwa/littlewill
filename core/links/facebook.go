@@ -12,6 +12,7 @@ import (
 // to be legitimate on other sites (e.g. referral_code for discounts, tracking for shipments).
 var FacebookSpecificTrackingParams = []string{
 	"in_reels_tab_context",
+	"original_uri",
 	"referral_code",
 	"referral_source",
 	"referral_story_type",
