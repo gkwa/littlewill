@@ -7,6 +7,7 @@ import (
 )
 
 var instagramParamsToRemove = []string{
+	"hl",
 	"igsh",
 	"igshid",
 }

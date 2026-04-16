@@ -35,6 +35,11 @@ func TestRemoveParamsFromInstagramURLs(t *testing.T) {
 			expected: "https://www.instagram.com/reel/DWnHqsCDlwC/?other=keep",
 		},
 		{
+			name:     "Instagram profile URL with hl parameter",
+			input:    "https://www.instagram.com/cannellevanille/?hl=en",
+			expected: "https://www.instagram.com/cannellevanille/",
+		},
+		{
 			name:     "Non-Instagram URL is unchanged",
 			input:    "https://example.com?igsh=something",
 			expected: "https://example.com?igsh=something",
