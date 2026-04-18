@@ -40,16 +40,6 @@ func TestRemoveParamsFromInstagramURLs(t *testing.T) {
 			expected: "https://www.instagram.com/cannellevanille/",
 		},
 		{
-			name:     "Instagram search URL with %20-encoded space converts to plus",
-			input:    "https://www.instagram.com/explore/search/keyword/?q=masienda%20tortilla%20press",
-			expected: "https://www.instagram.com/explore/search/keyword/?q=masienda+tortilla+press",
-		},
-		{
-			name:     "Instagram search URL with plus-encoded space unchanged",
-			input:    "https://www.instagram.com/explore/search/keyword/?q=masiend+tortilla+press",
-			expected: "https://www.instagram.com/explore/search/keyword/?q=masiend+tortilla+press",
-		},
-		{
 			name:     "Non-Instagram URL is unchanged",
 			input:    "https://example.com?igsh=something",
 			expected: "https://example.com?igsh=something",

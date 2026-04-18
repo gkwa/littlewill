@@ -95,6 +95,8 @@ func processURLs(r io.Reader, w io.Writer, processor func(*url.URL) *url.URL) er
 
 				u = processor(u)
 
+				u.RawQuery = strings.ReplaceAll(u.RawQuery, "%20", "+")
+
 				return u.String()
 			})
 		}

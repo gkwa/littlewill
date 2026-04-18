@@ -90,6 +90,11 @@ func TestRemoveTextFragments(t *testing.T) {
 			expected: "https://example.com/article",
 		},
 		{
+			name:     "Query string %20 spaces are normalized to plus",
+			input:    "https://example.com/search?q=hello%20world",
+			expected: "https://example.com/search?q=hello+world",
+		},
+		{
 			name: "Multiple links with text fragments",
 			input: `
 Check out this article: https://example.com/article1#:~:text=some%20text
