@@ -23,14 +23,12 @@ func RemoveParamsFromInstagramURLs(r io.Reader, w io.Writer) error {
 			return u
 		}
 		q := u.Query()
-		changed := false
 		for _, param := range instagramParamsToRemove {
-			if q.Has(param) {
-				q.Del(param)
-				changed = true
-			}
+			q.Del(param)
 		}
-		if changed {
+		if len(q) == 0 {
+			u.RawQuery = ""
+		} else {
 			u.RawQuery = q.Encode()
 		}
 		return u
