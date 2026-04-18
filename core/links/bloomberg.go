@@ -34,6 +34,7 @@ func RemoveParamsFromBloombergURLs(r io.Reader, w io.Writer) error {
 		if changed {
 			u.RawQuery = q.Encode()
 		}
+		u.Path = stripTrailingSlash(u.Path)
 		return u
 	})
 }

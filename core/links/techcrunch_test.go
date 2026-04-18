@@ -30,6 +30,11 @@ func TestRemoveParamsFromTechCrunchURLs(t *testing.T) {
 			expected: "https://email.techcrunch.com/article?param=value",
 		},
 		{
+			name:     "TechCrunch URL with trailing slash gets it stripped",
+			input:    "https://techcrunch.com/2025/01/01/some-article/",
+			expected: "https://techcrunch.com/2025/01/01/some-article",
+		},
+		{
 			name:     "Non-TechCrunch URL",
 			input:    "https://example.com?utm_source=newsletter",
 			expected: "https://example.com?utm_source=newsletter",

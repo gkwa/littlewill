@@ -65,7 +65,7 @@ func RemoveParamsFromAmazonURLs(r io.Reader, w io.Writer) error {
 				cleanedSegments = append(cleanedSegments, segment)
 			}
 		}
-		u.Path = strings.Join(cleanedSegments, "/")
+		u.Path = stripTrailingSlash(strings.Join(cleanedSegments, "/"))
 
 		q := u.Query()
 		for param := range q {

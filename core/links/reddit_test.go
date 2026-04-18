@@ -27,17 +27,17 @@ func TestRemoveParamsFromRedditURLs(t *testing.T) {
 		{
 			name:     "Reddit short URL with share_id",
 			input:    "https://redd.it/1lb7mga?share_id=mHY19WpSs_UfZsKQhbBrx",
-			expected: "https://redd.it/1lb7mga",
+			expected: "https://redd.it/1lb7mga/",
 		},
 		{
 			name:     "Reddit URL with UTM parameters using shared logic",
 			input:    "https://www.reddit.com/r/test/comments/789?utm_source=newsletter&utm_medium=email&sort=new",
-			expected: "https://www.reddit.com/r/test/comments/789?sort=new",
+			expected: "https://www.reddit.com/r/test/comments/789/?sort=new",
 		},
 		{
 			name:     "Reddit URL with share_id and UTM parameters",
 			input:    "https://www.reddit.com/r/programming/comments/123456?share_id=abc123&utm_source=newsletter&utm_medium=email",
-			expected: "https://www.reddit.com/r/programming/comments/123456",
+			expected: "https://www.reddit.com/r/programming/comments/123456/",
 		},
 		{
 			name:     "Reddit URL with cId, iId and other parameters",
@@ -47,7 +47,7 @@ func TestRemoveParamsFromRedditURLs(t *testing.T) {
 		{
 			name:     "Reddit URL with share_id and other parameters",
 			input:    "https://www.reddit.com/r/test/comments/789?share_id=xyz&sort=new&other=keep",
-			expected: "https://www.reddit.com/r/test/comments/789?other=keep&sort=new",
+			expected: "https://www.reddit.com/r/test/comments/789/?other=keep&sort=new",
 		},
 		{
 			name:     "Reddit URL without tracking parameters",
@@ -72,12 +72,12 @@ func TestRemoveParamsFromRedditURLs(t *testing.T) {
 		{
 			name:     "Reddit URL with individual Branch.io parameters",
 			input:    "https://www.reddit.com/r/test/comments/123?%243p=e_as&correlation_id=aca4f99e-b3b8-4824-9e0c-9d9e482d04ac&other=keep",
-			expected: "https://www.reddit.com/r/test/comments/123?other=keep",
+			expected: "https://www.reddit.com/r/test/comments/123/?other=keep",
 		},
 		{
 			name:     "Reddit URL with ref_campaign and ref_source",
 			input:    "https://www.reddit.com/r/programming/comments/456?ref_campaign=email_digest&ref_source=email&sort=top",
-			expected: "https://www.reddit.com/r/programming/comments/456?sort=top",
+			expected: "https://www.reddit.com/r/programming/comments/456/?sort=top",
 		},
 		{
 			name: "Multiple Reddit URLs in text",
@@ -89,7 +89,7 @@ https://www.reddit.com/r/esp32/comments/1nl6fs9/?%243p=e_as&%24deep_link=true&co
 			expected: `Check out these Reddit posts:
 https://www.reddit.com/r/Sourdough/comments/1lb7mga/crumb_read_customer_complains_my_sourdough_rises/
 https://www.reddit.com/search/?q=test
-https://redd.it/456789
+https://redd.it/456789/
 https://www.reddit.com/r/esp32/comments/1nl6fs9/`,
 		},
 		{
@@ -99,16 +99,16 @@ https://www.reddit.com/r/esp32/comments/1nl6fs9/`,
 var redditUrl = "https://www.reddit.com/search/?q=test&cId=abc-123&iId=def-456&%24deep_link=true";
 ` + "```" + `
 Another Reddit URL: https://redd.it/456?share_id=def456&utm_source=test&iId=ghi789&correlation_id=test123`,
-			expected: `Check this Reddit URL: https://www.reddit.com/r/test/comments/123
+			expected: `Check this Reddit URL: https://www.reddit.com/r/test/comments/123/
 ` + "```" + `
 var redditUrl = "https://www.reddit.com/search/?q=test&cId=abc-123&iId=def-456&%24deep_link=true";
 ` + "```" + `
-Another Reddit URL: https://redd.it/456`,
+Another Reddit URL: https://redd.it/456/`,
 		},
 		{
 			name:     "Reddit subdomain URL",
 			input:    "https://old.reddit.com/r/programming/comments/123?share_id=test123&cId=uuid123&iId=uuid456&post_fullname=t3_123456&post_index=1",
-			expected: "https://old.reddit.com/r/programming/comments/123",
+			expected: "https://old.reddit.com/r/programming/comments/123/",
 		},
 		{
 			name:     "Reddit URL with custom UTM parameter",

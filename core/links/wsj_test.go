@@ -45,6 +45,11 @@ func TestRemoveParamsFromWSJURLs(t *testing.T) {
 			expected: "https://www.wsj.com/articles/article-title?param=value",
 		},
 		{
+			name:     "WSJ URL with trailing slash gets it stripped",
+			input:    "https://www.wsj.com/tech/personal-tech/some-article/",
+			expected: "https://www.wsj.com/tech/personal-tech/some-article",
+		},
+		{
 			name:     "Non-WSJ URL",
 			input:    "https://example.com?mod=something&reflink=something&st=tracking",
 			expected: "https://example.com?mod=something&reflink=something&st=tracking",

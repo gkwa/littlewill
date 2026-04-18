@@ -20,9 +20,9 @@ func TestRemoveParamsFromInstagramURLs(t *testing.T) {
 			expected: "https://www.instagram.com/reel/DWnHqsCDlwC/",
 		},
 		{
-			name:     "Instagram reel URL without tracking parameters",
+			name:     "Instagram reel URL without tracking parameters gets trailing slash added",
 			input:    "https://www.instagram.com/reel/DWnHqsCDlwC",
-			expected: "https://www.instagram.com/reel/DWnHqsCDlwC",
+			expected: "https://www.instagram.com/reel/DWnHqsCDlwC/",
 		},
 		{
 			name:     "Instagram URL with igshid parameter",

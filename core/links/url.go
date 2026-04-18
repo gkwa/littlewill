@@ -36,6 +36,7 @@ func RemoveParamsFromSubstackURLs(r io.Reader, w io.Writer) error {
 	return processURLs(r, w, func(u *url.URL) *url.URL {
 		if isSubstackURL(u) {
 			u.RawQuery = ""
+			u.Path = stripTrailingSlash(u.Path)
 		}
 		return u
 	})

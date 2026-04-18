@@ -61,6 +61,7 @@ func RemoveParamsFromRedditURLs(r io.Reader, w io.Writer) error {
 		if changed {
 			u.RawQuery = q.Encode()
 		}
+		u.Path = addTrailingSlash(u.Path)
 		return u
 	})
 }

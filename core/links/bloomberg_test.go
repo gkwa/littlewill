@@ -67,6 +67,11 @@ Another Bloomberg URL: https://www.bloomberg.com/news/articles/2025-12-04/anothe
 			expected: "https://markets.bloomberg.com/data?id=456",
 		},
 		{
+			name:     "Bloomberg URL with trailing slash gets it stripped",
+			input:    "https://www.bloomberg.com/news/articles/2025-12-03/some-article/",
+			expected: "https://www.bloomberg.com/news/articles/2025-12-03/some-article",
+		},
+		{
 			name:     "Bloomberg URL with mixed parameters",
 			input:    "https://www.bloomberg.com/news/articles/2025-12-03/article?id=123&accessToken=jwt_token&category=tech&leadSource=share&page=2",
 			expected: "https://www.bloomberg.com/news/articles/2025-12-03/article?category=tech&id=123&page=2",

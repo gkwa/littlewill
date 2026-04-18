@@ -49,6 +49,11 @@ https://www.netflix.com/us/title/70206131
 https://example.com/title/70206131?trkid=keep`,
 		},
 		{
+			name:     "Netflix URL with trailing slash gets it stripped",
+			input:    "https://www.netflix.com/us/title/70206131/",
+			expected: "https://www.netflix.com/us/title/70206131",
+		},
+		{
 			name: "URLs inside code blocks should not be processed",
 			input: `Check this URL: https://www.netflix.com/us/title/70206131?s=a&trkid=13747225
 ` + "```" + `

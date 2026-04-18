@@ -41,6 +41,11 @@ And this one: https://second.substack.com/p/another-title
 `,
 		},
 		{
+			name:     "Substack URL with trailing slash gets it stripped",
+			input:    "https://example.substack.com/p/article-title/",
+			expected: "https://example.substack.com/p/article-title",
+		},
+		{
 			name:     "Substack main domain with r parameter",
 			input:    "https://substack.com/@pvonz/note/c-119126558?r=21036",
 			expected: "https://substack.com/@pvonz/note/c-119126558",
