@@ -10,6 +10,8 @@ import (
 // AmazonTrackingParams are Amazon-specific tracking parameters that should be removed
 var AmazonTrackingParams = []string{
 	"_encoding",
+	"ascsubtag",
+	"btn_ref",
 	"content-id",
 	"crid",
 	"cv_ct_cx",
@@ -17,6 +19,7 @@ var AmazonTrackingParams = []string{
 	"dib_tag",
 	"ds",
 	"keywords",
+	"linkCode",
 	"pd_rd_i",
 	"pd_rd_r",
 	"pd_rd_w",
@@ -32,6 +35,7 @@ var AmazonTrackingParams = []string{
 	"sp_csd",
 	"sprefix",
 	"sr",
+	"tag",
 	"th",
 }
 
