@@ -18,6 +18,7 @@ var AmazonTrackingParams = []string{
 	"dib",
 	"dib_tag",
 	"ds",
+	"geniuslink",
 	"keywords",
 	"linkCode",
 	"pd_rd_i",

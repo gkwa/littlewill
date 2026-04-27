@@ -146,6 +146,11 @@ Another Amazon URL: https://www.amazon.com/s?k=laptop`,
 			expected: "https://www.amazon.com/product-name/dp/B08N5WRWNW/extra-segment",
 		},
 		{
+			name:     "Amazon URL with geniuslink parameter",
+			input:    "https://www.amazon.com/SHAPTON-Kuromaku-Ceramic-Whetstone-Medium/dp/B01FYEYKEI?geniuslink=true",
+			expected: "https://www.amazon.com/SHAPTON-Kuromaku-Ceramic-Whetstone-Medium/dp/B01FYEYKEI",
+		},
+		{
 			name:     "Amazon affiliate link with linkCode, tag, ascsubtag, btn_ref",
 			input:    "https://www.amazon.com/dp/B0BKR8TN8X/ref=cm_sw_r_as_gl_api_gl_i_C8BT0VKDRNHZSWK5H50E?linkCode=ml1&tag=thevillagebak-20&ascsubtag=srctok-4e508f5e45711d70&btn_ref=srctok-4e508f5e45711d70",
 			expected: "https://www.amazon.com/dp/B0BKR8TN8X",
