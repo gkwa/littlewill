@@ -141,6 +141,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "tiktok",
+		ConfigKey:      "transforms.tiktok",
+		FlagName:       "enable-tiktok",
+		Description:    "Enable TikTok URL parameter removal",
+		Function:       links.RemoveParamsFromTikTokURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "conditional",
 		ConfigKey:      "transforms.conditional",
 		FlagName:       "enable-conditional",
