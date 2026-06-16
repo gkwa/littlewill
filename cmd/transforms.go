@@ -149,6 +149,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "walmart",
+		ConfigKey:      "transforms.walmart",
+		FlagName:       "enable-walmart",
+		Description:    "Enable Walmart URL parameter removal",
+		Function:       links.RemoveParamsFromWalmartURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "conditional",
 		ConfigKey:      "transforms.conditional",
 		FlagName:       "enable-conditional",
