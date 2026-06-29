@@ -3,15 +3,24 @@ package links
 import (
 	"io"
 	"net/url"
+	"regexp"
 	"slices"
 	"strings"
 )
 
 var WalmartTrackingParams = []string{
+	"adid",
 	"athbdg",
 	"classType",
+	"cn",
 	"from",
+	"gclsrc",
+	"veh",
+	"wmlspartner",
 }
+
+// walmartAdLabelRegex matches Walmart's wlN ad label parameters (wl0–wl12, etc.)
+var walmartAdLabelRegex = regexp.MustCompile(`^wl\d+$`)
 
 func isWalmartURL(u *url.URL) bool {
 	hostname := strings.ToLower(u.Hostname())
@@ -19,7 +28,9 @@ func isWalmartURL(u *url.URL) bool {
 }
 
 func isWalmartTrackingParam(param string) bool {
-	return isUTMParam(param) || slices.Contains(WalmartTrackingParams, param)
+	return isUTMParam(param) ||
+		slices.Contains(WalmartTrackingParams, param) ||
+		walmartAdLabelRegex.MatchString(param)
 }
 
 func RemoveParamsFromWalmartURLs(r io.Reader, w io.Writer) error {
