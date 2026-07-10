@@ -40,6 +40,11 @@ func TestRemoveParamsFromGoogleLinks(t *testing.T) {
 			expected: "https://example.com?param=value",
 		},
 		{
+			name:     "Google search with hs param",
+			input:    "https://www.google.com/search?hs=lGEq&q=exercise+bands+color+code",
+			expected: "https://www.google.com/search?q=exercise+bands+color+code",
+		},
+		{
 			name: "Multiple Google links",
 			input: `
 Search result: https://www.google.com/search?q=test&bih=722&biw=1536&hl=en&sxsrf=ABC123

@@ -31,6 +31,7 @@ var ParamsToRemove = []string{
 	"gs_lp",
 	"gs_ssp",
 	"hl",
+	"hs",
 	"ictx",
 	"ie",
 	"mstk",
