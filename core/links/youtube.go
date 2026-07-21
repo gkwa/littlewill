@@ -11,6 +11,7 @@ import (
 // YouTubeParamsToRemove are YouTube parameters that should be removed
 var YouTubeParamsToRemove = []string{
 	"si",
+	"is",
 	"app",
 	"feature",
 	"sqp",

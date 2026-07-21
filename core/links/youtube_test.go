@@ -138,6 +138,16 @@ Another YouTube URL: https://youtu.be/test123`,
 			input:    "https://www.youtube.com/live/Q05BvncrHSc?si=abc123&other=keep",
 			expected: "https://youtu.be/Q05BvncrHSc?other=keep",
 		},
+		{
+			name:     "YouTube short URL with is tracking parameter",
+			input:    "https://youtu.be/BjSZlSAXwDc?is=8OI6ghw9aa62DDuA",
+			expected: "https://youtu.be/BjSZlSAXwDc",
+		},
+		{
+			name:     "YouTube short URL with is and other parameters",
+			input:    "https://youtu.be/BjSZlSAXwDc?is=8OI6ghw9aa62DDuA&other=keep",
+			expected: "https://youtu.be/BjSZlSAXwDc?other=keep",
+		},
 	}
 
 	for _, tc := range testCases {
