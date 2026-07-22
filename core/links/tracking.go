@@ -17,6 +17,7 @@ var CommonTrackingParams = []string{
 	"_gl",
 	"_hsenc",
 	"_hsmi",
+	"adt_ei", // ActiveCampaign email tracking: encodes the recipient's email address to identify who clicked
 	"adgroupid",
 	"adheadline",
 	"campaign",
