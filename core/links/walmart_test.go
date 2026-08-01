@@ -32,12 +32,7 @@ func TestRemoveParamsFromWalmartURLs(t *testing.T) {
 		{
 			name:     "Walmart ad campaign URL strips all ad-tracking params and keeps functional params",
 			input:    "https://www.walmart.com/ip/Raindrops-Rotating-Shelf-Wall-Mounted-Swivel-Towel-Rail-Bathroom-Clothes-Rack-Coat/16114150174?adid=22222222297D492DB7E57C8399FB4537265C3FFA506_0000000000_21407473164&cn=FY25-ENTP-PMAX_cnv_dps_dsn_dis_ad_entp_e_n&conditionGroupCode=1&gclsrc=aw.ds&selectedOfferId=D492DB7E57C8399FB4537265C3FFA506&selectedSellerId=102510489&veh=sem&wl0=&wl1=g&wl10=5398217977&wl11=online&wl12=D492DB7E57C8399FB4537265C3FFA506&wl2=c&wl3=&wl4=&wl5=9015483&wl6=&wl7=&wl8=&wl9=pla&wmlspartner=wlpa&wmlspartner=wlpa",
-			expected: "https://www.walmart.com/ip/Raindrops-Rotating-Shelf-Wall-Mounted-Swivel-Towel-Rail-Bathroom-Clothes-Rack-Coat/16114150174?conditionGroupCode=1&selectedOfferId=D492DB7E57C8399FB4537265C3FFA506",
-		},
-		{
-			name:     "Walmart URL with only selectedSellerId strips it",
-			input:    "https://www.walmart.com/ip/3-Tier-Stainless-Steel-Steamer-Food-Vegetable-Steamer-Pot-Cookware-with-Glass-Lid-for-Home-Kitchen/20117751099?selectedSellerId=103124163",
-			expected: "https://www.walmart.com/ip/3-Tier-Stainless-Steel-Steamer-Food-Vegetable-Steamer-Pot-Cookware-with-Glass-Lid-for-Home-Kitchen/20117751099",
+			expected: "https://www.walmart.com/ip/Raindrops-Rotating-Shelf-Wall-Mounted-Swivel-Towel-Rail-Bathroom-Clothes-Rack-Coat/16114150174?conditionGroupCode=1&selectedOfferId=D492DB7E57C8399FB4537265C3FFA506&selectedSellerId=102510489",
 		},
 		{
 			name:     "Walmart URL with wl-prefixed ad label params are removed",

@@ -15,7 +15,6 @@ var WalmartTrackingParams = []string{
 	"cn",
 	"from",
 	"gclsrc",
-	"selectedSellerId",
 	"veh",
 	"wmlspartner",
 }
