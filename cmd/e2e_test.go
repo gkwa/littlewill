@@ -24,11 +24,11 @@ func TestProcessPathsFromStdin(t *testing.T) {
 var url = "https://www.google.com/search?q=test&hl=en";
 ` + "```" + `
 Another link: https://www.google.com/search?q=example&hl=en`,
-			expected: `Check this link: https://www.google.com/search?q=test
+			expected: `Check this link: https://google.com/search?q=test
 ` + "```" + `
 var url = "https://www.google.com/search?q=test&hl=en";
 ` + "```" + `
-Another link: https://www.google.com/search?q=example`,
+Another link: https://google.com/search?q=example`,
 		},
 		{
 			name: "YouTube URLs are processed correctly",
@@ -72,7 +72,7 @@ More links:
 Google: https://www.google.com/search?q=example&hl=fr
 YouTube: https://youtu.be/dQw4w9WgXcQ?si=qrstuvwxyz123456
 Substack: https://another.substack.com/p/another-article?utm_campaign=post`,
-			expected: `Google: https://www.google.com/search?q=test
+			expected: `Google: https://google.com/search?q=test
 YouTube: https://youtu.be/dQw4w9WgXcQ
 Substack: https://example.substack.com/p/article-title
 ` + "```" + `
@@ -83,7 +83,7 @@ const urls = {
 };
 ` + "```" + `
 More links:
-Google: https://www.google.com/search?q=example
+Google: https://google.com/search?q=example
 YouTube: https://youtu.be/dQw4w9WgXcQ
 Substack: https://another.substack.com/p/another-article`,
 		},

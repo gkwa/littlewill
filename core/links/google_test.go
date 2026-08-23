@@ -17,17 +17,17 @@ func TestRemoveParamsFromGoogleLinks(t *testing.T) {
 		{
 			name:     "Google search link with parameters",
 			input:    "https://www.google.com/search?q=test&bih=722&biw=1536&hl=en&sxsrf=ABC123",
-			expected: "https://www.google.com/search?q=test",
+			expected: "https://google.com/search?q=test",
 		},
 		{
 			name:     "Google image search",
 			input:    "https://www.google.com/search?udm=2&q=skiing",
-			expected: "https://www.google.com/search?q=skiing&udm=2",
+			expected: "https://google.com/search?q=skiing&udm=2",
 		},
 		{
 			name:     "Google link without parameters",
 			input:    "https://www.google.com",
-			expected: "https://www.google.com",
+			expected: "https://google.com",
 		},
 		{
 			name:     "Google Maps link (excluded)",
@@ -42,7 +42,7 @@ func TestRemoveParamsFromGoogleLinks(t *testing.T) {
 		{
 			name:     "Google search with hs param",
 			input:    "https://www.google.com/search?hs=lGEq&q=exercise+bands+color+code",
-			expected: "https://www.google.com/search?q=exercise+bands+color+code",
+			expected: "https://google.com/search?q=exercise+bands+color+code",
 		},
 		{
 			name: "Multiple Google links",
@@ -51,9 +51,19 @@ Search result: https://www.google.com/search?q=test&bih=722&biw=1536&hl=en&sxsrf
 Maps link: https://www.google.com/maps/place/New+York
 `,
 			expected: `
-Search result: https://www.google.com/search?q=test
+Search result: https://google.com/search?q=test
 Maps link: https://www.google.com/maps/place/New+York
 `,
+		},
+		{
+			name:     "Bare google.com host is left alone",
+			input:    "https://google.com/search?q=test&hl=en",
+			expected: "https://google.com/search?q=test",
+		},
+		{
+			name:     "Non-www subdomain is preserved",
+			input:    "https://news.google.com/search?q=test&hl=en",
+			expected: "https://news.google.com/search?q=test",
 		},
 	}
 

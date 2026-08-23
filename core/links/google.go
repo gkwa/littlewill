@@ -2,6 +2,7 @@ package links
 
 import (
 	"io"
+	"net"
 	"net/url"
 	"slices"
 	"strings"
@@ -72,6 +73,7 @@ func RemoveParamsFromGoogleURLs(r io.Reader, w io.Writer) error {
 		if err != nil {
 			return u
 		}
+		stripWWWHost(parsed)
 		return parsed
 	})
 }
@@ -105,4 +107,21 @@ func cleanGoogleURL(urlStr string) (string, []string, error) {
 
 	u.RawQuery = q.Encode()
 	return u.String(), remainingParams, nil
+}
+
+// stripWWWHost drops the www. prefix from a Google host. Google 301-redirects
+// the bare host to www., so the shorter form resolves identically.
+func stripWWWHost(u *url.URL) {
+	host := u.Hostname()
+	if !strings.HasPrefix(strings.ToLower(host), "www.") {
+		return
+	}
+
+	bare := host[len("www."):]
+	if port := u.Port(); port != "" {
+		u.Host = net.JoinHostPort(bare, port)
+		return
+	}
+
+	u.Host = bare
 }
