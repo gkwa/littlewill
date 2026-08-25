@@ -69,6 +69,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "codenewsletter",
+		ConfigKey:      "transforms.codenewsletter",
+		FlagName:       "enable-codenewsletter",
+		Description:    "Enable codenewsletter.ai URL parameter removal",
+		Function:       links.RemoveParamsFromCodeNewsletterURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "facebook",
 		ConfigKey:      "transforms.facebook",
 		FlagName:       "enable-facebook",
