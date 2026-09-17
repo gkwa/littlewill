@@ -101,6 +101,14 @@ var AllTransforms = []TransformDefinition{
 		DefaultEnabled: true,
 	},
 	{
+		Name:           "medium",
+		ConfigKey:      "transforms.medium",
+		FlagName:       "enable-medium",
+		Description:    "Enable Medium URL parameter removal",
+		Function:       links.RemoveParamsFromMediumURLs,
+		DefaultEnabled: true,
+	},
+	{
 		Name:           "reddit",
 		ConfigKey:      "transforms.reddit",
 		FlagName:       "enable-reddit",

@@ -181,7 +181,6 @@ func TestIsTrackingParam(t *testing.T) {
 		{"fbclid", true},
 		{"gclid", true},
 		{"_ga", true},
-		{"source", true},
 		{"medium", true},
 		{"campaign", true},
 		// HubSpot tracking parameters
@@ -198,6 +197,7 @@ func TestIsTrackingParam(t *testing.T) {
 		{"page", false},
 		{"category", false},
 		{"q", false},
+		{"source", false},
 		{"search", false},
 	}
 

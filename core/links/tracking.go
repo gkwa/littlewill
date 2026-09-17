@@ -43,7 +43,6 @@ var CommonTrackingParams = []string{
 	"sh_kit",
 	"share_id",
 	"skip_click_tracking",
-	"source",
 	"srsltid",
 }
 
