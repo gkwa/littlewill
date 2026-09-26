@@ -55,6 +55,21 @@ And this one: https://second.substack.com/p/another-title
 			input:    "https://substack.com/@alphasignalai/note/c-120940100?r=21036",
 			expected: "https://substack.com/@alphasignalai/note/c-120940100",
 		},
+		{
+			name:     "Substack custom domain share link",
+			input:    "https://newsletter.systemdesignclassroom.com/p/ai-agents-just-rediscovered-the-dual-write-problem?post_id=215811654&publication_id=2391457",
+			expected: "https://newsletter.systemdesignclassroom.com/p/ai-agents-just-rediscovered-the-dual-write-problem",
+		},
+		{
+			name:     "Custom domain /p/ path without Substack params is untouched",
+			input:    "https://example.com/p/some-page?id=42",
+			expected: "https://example.com/p/some-page?id=42",
+		},
+		{
+			name:     "Custom domain with only post_id is untouched",
+			input:    "https://example.com/p/some-page?post_id=42",
+			expected: "https://example.com/p/some-page?post_id=42",
+		},
 	}
 
 	for _, tc := range testCases {

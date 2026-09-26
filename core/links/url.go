@@ -14,7 +14,22 @@ var textFragmentRegex = regexp.MustCompile(`(?i)^:~:text=`)
 
 func isSubstackURL(u *url.URL) bool {
 	hostname := strings.ToLower(u.Hostname())
-	return hostname == "substack.com" || strings.HasSuffix(hostname, ".substack.com")
+	if hostname == "substack.com" || strings.HasSuffix(hostname, ".substack.com") {
+		return true
+	}
+	return isSubstackCustomDomainPost(u)
+}
+
+// isSubstackCustomDomainPost recognises posts on custom domains, such as
+// newsletter.example.com, which CNAME to substack-custom-domains.com and so
+// cannot be identified by hostname. Substack share links always carry both
+// post_id and publication_id on a /p/ path.
+func isSubstackCustomDomainPost(u *url.URL) bool {
+	if !strings.HasPrefix(u.Path, "/p/") {
+		return false
+	}
+	q := u.Query()
+	return q.Has("post_id") && q.Has("publication_id")
 }
 
 func isTheSweeklyURL(u *url.URL) bool {
