@@ -1,6 +1,9 @@
 package version
 
-import "fmt"
+import (
+	"fmt"
+	"runtime/debug"
+)
 
 type BuildInfo struct {
 	Date        string
@@ -16,20 +19,29 @@ Build Date: %s
 Go Version: %s`, bi.Version, bi.FullGitSHA, bi.Date, bi.GoVersion)
 }
 
-var (
-	Date        string
-	FullGitSHA  string
-	GoVersion   string
-	ShortGitSHA string
-	Version     string
-)
-
+// GetBuildInfo reads the metadata the go toolchain embeds in every binary:
+// the module version for go install pkg@version, and the VCS revision and
+// commit time for builds inside a git checkout.
 func GetBuildInfo() BuildInfo {
-	return BuildInfo{
-		Date:        Date,
-		FullGitSHA:  FullGitSHA,
-		GoVersion:   GoVersion,
-		ShortGitSHA: ShortGitSHA,
-		Version:     Version,
+	info, ok := debug.ReadBuildInfo()
+	if !ok {
+		return BuildInfo{}
 	}
+
+	bi := BuildInfo{
+		GoVersion: info.GoVersion,
+		Version:   info.Main.Version,
+	}
+	for _, s := range info.Settings {
+		switch s.Key {
+		case "vcs.revision":
+			bi.FullGitSHA = s.Value
+		case "vcs.time":
+			bi.Date = s.Value
+		}
+	}
+	if len(bi.FullGitSHA) >= 7 {
+		bi.ShortGitSHA = bi.FullGitSHA[:7]
+	}
+	return bi
 }

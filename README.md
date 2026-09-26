@@ -12,16 +12,8 @@ littlewill input.md > output.md
 
 ## Install littlewill
 
-On macOS/Linux:
-
 ```bash
-brew install gkwa/homebrew-tools/littlewill
-```
-
-On Windows:
-
-```powershell
-TBD
+go install github.com/gkwa/littlewill@latest
 ```
 
 ## Running Tests
